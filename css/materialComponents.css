@@ -1,0 +1,322 @@
+.material-design-table-dark
+{
+	background-color: #3D3D47;
+	border-radius:3px;
+	margin-top:20px;
+	margin-bottom:10px;
+	margin-right:10px;
+	margin-left:10px;
+	border-collapse: collapse;
+	width: calc(100% - 20px);
+	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.proprieta-grafico-table-border-right
+{
+	border-right: 1px solid #4C4C50;
+}
+.material-design-table-dark thead tr
+{
+	transition: all 0.5s cubic-bezier(.25,.8,.25,1);
+}
+.material-design-table-dark th
+{
+	padding:10px 15px;
+	color:#aaa;
+	text-align: left;
+	font-size:12px;
+	font-family: 'Montserrat', sans-serif;
+}
+.material-design-table-dark td 
+{
+	padding:10px 15px;
+	color:#ddd;
+	text-align: left;
+	font-size:12px;
+	font-family: 'Montserrat', sans-serif;
+}
+.material-design-table-dark input[type=text],.material-design-table-dark input[type=number],.material-design-table-dark select
+{
+	height:25px;
+	width:80px;
+	border-radius:2px;
+	background-color: #464651;
+	border:1px solid #606062;
+	outline:none;
+	padding:5px;
+	color:#ddd;
+	text-align: left;
+	font-size:12px;
+	float:left;
+	display: inline-block;
+}
+.material-design-table-dark input[type=color]
+{
+	height:25px;
+	width:80px;
+	border-radius:2px;
+	border:1px solid #606062;
+	background-color: #464651;
+	outline:none;
+	padding:2px;
+	float:left;
+	display: inline-block;
+}
+.material-design-table-dark tbody tr
+{
+	transition: all 0.5s cubic-bezier(.25,.8,.25,1);
+	/*border-top: 1px solid #4C4C50;*/
+}
+.material-design-table-dark tbody tr:hover,.material-design-table-dark thead tr:hover
+{
+	background-color: #464651;
+}
+.material-design-table-dark select
+{
+	height:25px;
+	border-radius:2px;
+	padding:5px;
+	border:none;
+	background-color: transparent;
+	outline:none;
+	float:left;
+	display: block;
+	cursor: pointer;
+	transition: all 0.5s cubic-bezier(.25,.8,.25,1);
+	font-family: 'Montserrat', sans-serif;
+	border-bottom: 2px solid #363640;
+}
+.material-design-table-dark select:hover
+{
+	border-bottom: 2px solid #363640;
+}
+.material-design-table-dark-button-reset-settings
+{
+    border:none;
+    background-color: transparent;
+    text-decoration: underline;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    height: 30px;
+    color:#ddd;
+    padding-left:10px;
+    padding-right:10px;
+    background-color: #464651;
+    border-radius: 2px;
+    outline:none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+/*-----------------------------------*/
+.pure-material-checkbox {
+    z-index: 0;
+    position: relative;
+    display: inline-block;
+	font-family: 'Montserrat', sans-serif;
+	color:black;
+	font-size:13px;
+    /*color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.87);
+    font-family: var(--pure-material-font, "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system);
+    font-size: 16px;*/
+    line-height: 20px;
+	height:auto;
+}
+
+/* Input */
+.pure-material-checkbox > input {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    z-index: -1;
+    position: absolute;
+    left: -12px;
+    top: -10px;
+    display: block;
+    margin: 0;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.6);
+    box-shadow: none;
+    outline: none;
+    opacity: 0;
+    transform: scale(1);
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.2s;
+}
+
+/* Span */
+.pure-material-checkbox > span {
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
+}
+
+.pure-material-checkbox div {
+    width:calc(100% - 25px);
+    /*margin-top:-10px;*/
+    float:right;
+}
+
+/* Box */
+.pure-material-checkbox > span::before {
+    content: "";
+    display: inline-block;
+    box-sizing: border-box;
+    margin: 2px 10px 0px 0px;
+    border: solid 2px; /* Safari */
+    border-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.6);
+    border-radius: 2px;
+    width: 15px;
+    height: 15px;
+    vertical-align: top;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+/* Checkmark */
+.pure-material-checkbox > span::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 1px;
+    left: -1px;
+    width: 9px;
+    height: 5px;
+    border: solid 2px transparent;
+    border-right: none;
+    border-top: none;
+    transform: translate(3px, 4px) rotate(-45deg);
+}
+
+/* Checked, Indeterminate */
+.pure-material-checkbox > input:checked,
+.pure-material-checkbox > input:indeterminate {
+    background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+}
+
+.pure-material-checkbox > input:checked + span::before,
+.pure-material-checkbox > input:indeterminate + span::before {
+    border-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+    background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+}
+
+.pure-material-checkbox > input:checked + span::after,
+.pure-material-checkbox > input:indeterminate + span::after {
+    border-color: rgb(var(--pure-material-onprimary-rgb, 255, 255, 255));
+}
+
+.pure-material-checkbox > input:indeterminate + span::after {
+    border-left: none;
+    transform: translate(4px, 3px);
+}
+
+/* Hover, Focus */
+.pure-material-checkbox:hover > input {
+    opacity: 0.04;
+}
+
+.pure-material-checkbox > input:focus {
+    opacity: 0.12;
+}
+
+.pure-material-checkbox:hover > input:focus {
+    opacity: 0.16;
+}
+
+/* Active */
+.pure-material-checkbox > input:active {
+    opacity: 1;
+    transform: scale(0);
+    transition: transform 0s, opacity 0s;
+}
+
+.pure-material-checkbox > input:active + span::before {
+    border-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+}
+
+.pure-material-checkbox > input:checked:active + span::before {
+    border-color: transparent;
+    background-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.6);
+}
+
+/* Disabled */
+.pure-material-checkbox > input:disabled {
+    opacity: 0;
+}
+
+.pure-material-checkbox > input:disabled + span {
+    color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.38);
+    cursor: initial;
+}
+
+.pure-material-checkbox > input:disabled + span::before {
+    border-color: currentColor;
+}
+
+.pure-material-checkbox > input:checked:disabled + span::before,
+.pure-material-checkbox > input:indeterminate:disabled + span::before {
+    border-color: transparent;
+    background-color: currentColor;
+}
+/*material radio button--------------------------------------------*/
+/* The container */
+.material-radio-button-container {
+	display: block;
+	position: relative;
+	padding-left: 25px;
+	cursor: pointer;
+	font-size: 13px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+    user-select: none;
+    color:white;
+  }
+  
+  /* Hide the browser's default radio button */
+  .material-radio-button-container input {
+	position: absolute;
+	opacity: 0;
+	cursor: pointer;
+  }
+  
+  /* Create a custom radio button */
+  .material-radio-button-checkmark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 17px;
+	width: 17px;
+	background-color: #eee;
+	border-radius: 50%;
+  }
+  
+  /* On mouse-over, add a grey background color */
+  .material-radio-button-container:hover input ~ .material-radio-button-checkmark {
+	background-color: #ccc;
+  }
+  
+  /* When the radio button is checked, add a blue background */
+  .material-radio-button-container input:checked ~ .material-radio-button-checkmark {
+	background-color: #2196F3;
+  }
+  
+  /* Create the indicator (the dot/circle - hidden when not checked) */
+  .material-radio-button-checkmark:after {
+	content: "";
+	position: absolute;
+	display: none;
+  }
+  
+  /* Show the indicator (dot/circle) when checked */
+  .material-radio-button-container input:checked ~ .material-radio-button-checkmark:after {
+	display: block;
+  }
+  
+  /* Style the indicator (dot/circle) */
+  .material-radio-button-container .material-radio-button-checkmark:after {
+	  top: 6px;
+	  left: 6px;
+	  width: 6px;
+	  height: 6px;
+	  border-radius: 50%;
+	  background: white;
+  }

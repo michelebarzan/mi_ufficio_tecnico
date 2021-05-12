@@ -1,0 +1,17 @@
+.fa-spinner-container
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin:10px;
+}
+.fa-spinner-container span
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+}
+.fa-spinner-container i
+{
+    margin-right: 5px;
+}

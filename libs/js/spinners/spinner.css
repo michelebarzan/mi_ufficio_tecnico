@@ -1,0 +1,195 @@
+	#containerCircleSpinner
+	{
+		display: table;
+		left:0;
+		top:0;
+		right:0;
+		bottom:0;
+		z-index:99;
+		opacity:0.7;
+		background:#171717;
+		position:fixed;
+		width:100%;
+		height:100%;
+		line-height:100%;
+		text-align:center;
+	}
+	#middleCircleSpinner
+	{
+		display: table-cell;
+		vertical-align: middle;
+	}
+	#innerCircleSpinner 
+	{
+		margin-left: auto;
+		margin-right: auto;
+		width: 700px;
+		text-align:center;
+	}
+	.cirlceSpinner-spin-wrapper
+	{
+		position: relative;
+		width: 100%;
+		height: 100vh;
+		background: transparent;
+	}
+	.circleSpinner-spinnerLabel
+	{
+		position: absolute;
+		top:50%;
+		color:white;
+		text-align:center;
+		width:100%;
+		font-family:'Montserrat',sans-serif;
+		font-size:70%;
+		text-shadow: 2px 2px 4px #000000;
+	}
+	.cirlceSpinner-spin-wrapper .circleSpinner-spinner {
+		position: absolute;
+		height: 40px;
+		width: 40px;
+		border: 3px solid transparent;
+		border-top-color: #A04668;
+		top: 45%;
+		left: 50%;
+		margin: -30px;
+		border-radius: 50%;
+		animation: spin 2s linear infinite;
+	}
+	.cirlceSpinner-spin-wrapper .circleSpinner-spinner:before, .cirlceSpinner-spin-wrapper .circleSpinner-spinner:after {
+		content: '';
+		position: absolute;
+		border: 3px solid transparent;
+		border-radius: 50%;
+	}
+	.cirlceSpinner-spin-wrapper .circleSpinner-spinner:before {
+		border-top-color: #254E70;
+		top: -12px;
+		left: -12px;
+		right: -12px;
+		bottom: -12px;
+		animation: spin 3s linear infinite;
+	}
+	.cirlceSpinner-spin-wrapper .circleSpinner-spinner:after {
+		border-top-color: #FFFBFE;
+		top: 6px;
+		left: 6px;
+		right: 6px;
+		bottom: 6px;
+		animation: spin 4s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+		transform: rotate(0deg);
+		}
+		100% {
+		transform: rotate(360deg);
+		}
+	}
+
+	#gridSpinnerContainer
+	{
+	width:225px;
+	height:24px;
+	display:inline-block;
+	overflow:hidden;
+	margin-top:20px;
+	}
+	.sk-cube-grid 
+	{
+	width: 24px;
+	height: 24px;
+	display:inline-block;
+	float:left;
+	}
+	.sk-cube-grid .sk-cube {
+	width: 33%;
+	height: 33%;
+	background-color: #12365A;
+	float: left;
+	-webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+		animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out; 
+	}
+	.sk-cube-grid .sk-cube1 {
+	-webkit-animation-delay: 0.2s;
+		animation-delay: 0.2s; }
+	.sk-cube-grid .sk-cube2 {
+	-webkit-animation-delay: 0.3s;
+		animation-delay: 0.3s; }
+	.sk-cube-grid .sk-cube3 {
+	-webkit-animation-delay: 0.4s;
+		animation-delay: 0.4s; }
+	.sk-cube-grid .sk-cube4 {
+	-webkit-animation-delay: 0.1s;
+		animation-delay: 0.1s; }
+	.sk-cube-grid .sk-cube5 {
+	-webkit-animation-delay: 0.2s;
+		animation-delay: 0.2s; }
+	.sk-cube-grid .sk-cube6 {
+	-webkit-animation-delay: 0.3s;
+		animation-delay: 0.3s; }
+	.sk-cube-grid .sk-cube7 {
+	-webkit-animation-delay: 0s;
+		animation-delay: 0s; }
+	.sk-cube-grid .sk-cube8 {
+	-webkit-animation-delay: 0.1s;
+		animation-delay: 0.1s; }
+	.sk-cube-grid .sk-cube9 {
+	-webkit-animation-delay: 0.2s;
+		animation-delay: 0.2s; }
+
+	@-webkit-keyframes sk-cubeGridScaleDelay {
+	0%, 70%, 100% {
+	-webkit-transform: scale3D(1, 1, 1);
+		transform: scale3D(1, 1, 1);
+	} 35% {
+	-webkit-transform: scale3D(0, 0, 1);
+		transform: scale3D(0, 0, 1); 
+	}
+	}
+
+	@keyframes sk-cubeGridScaleDelay {
+	0%, 70%, 100% {
+	-webkit-transform: scale3D(1, 1, 1);
+		transform: scale3D(1, 1, 1);
+	} 35% {
+	-webkit-transform: scale3D(0, 0, 1);
+		transform: scale3D(0, 0, 1);
+	} 
+	}
+	#messaggiSpinner
+	{
+	height:24px;
+	line-height:24px;
+	font-family:'Montserrat',sans-serif;
+	display:inline-block;
+	float:left;
+	width:190px;
+	font-size:70%;
+	margin-left:10px;
+	overflow-y:auto;
+	}
+	#mouseSpinner {
+	/* Spinner size and color */
+	width: 1.5rem;
+	height: 1.5rem;
+	position:absolute;
+	z-index:9999;
+	/* Additional spinner styles */
+	animation: mouseSpinner 400ms linear infinite;
+	border-bottom-color: transparent;
+	border-right-color: transparent;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 50%;  
+	box-sizing: border-box;
+	display: inline-block;
+	vertical-align: middle;
+	border-top-color: #09d;
+	border-left-color: #09d;
+	}
+	@keyframes mouseSpinner {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+	}

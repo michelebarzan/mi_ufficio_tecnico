@@ -1,0 +1,371 @@
+/* width */
+::-webkit-scrollbar
+{
+    width: 7px;
+}
+/* Track */
+::-webkit-scrollbar-track
+{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.05);
+}
+/* Handle */
+::-webkit-scrollbar-thumb
+{
+    background: rgb(128, 127, 127); 
+    border-radius: 10px;
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover
+{
+    background: #aaa; 
+}
+.swal2-popup
+{
+    max-width: 700px;
+}
+button
+{
+    cursor: pointer;
+}
+.gestione-utenti-top-bar
+{
+    height:50px;
+    width:100%;
+    background-color: rgb(228, 226, 226);
+    box-sizing: border-box;
+    padding:10px;
+    margin-top:50px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    /*box-shadow: 0 1px 3px rgba(61, 61, 61, 0.12), 0 1px 2px rgba(0,0,0,0.24);*/
+}
+#searcBarGestioneUtenti
+{
+    background-image: url("../images/search.png");
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    -webkit-appearance:none;
+    width: calc(100% - 130px);
+    max-width: 640px;
+    margin-right: 10px;
+    height:30px;
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    border-radius: 4px;
+    border:none;
+    box-sizing: border-box;
+    padding-left: 35px;
+    padding-right:10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    outline: none;
+}
+#searcBarGestioneUtenti:focus
+{
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+#selectFiltroGestioneUtenti
+{
+    width:60px;
+    height:30px;
+    background-color: transparent;
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    border:none;
+    outline: none;
+}
+.gestione-utenti-top-bar button
+{
+    width:25px;
+    height: 25px;
+    background-color: transparent;
+    border:none;
+    outline: none;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    margin-right: 10px;
+    font-size: 18px;
+}
+.gestione-utenti-top-bar button:hover
+{
+    color:rgb(48, 133, 214);
+}
+#containerGestioneUtenti
+{
+    max-width: 700px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top:5px;
+    margin-bottom:5px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height:calc(100% - 170px);
+}
+.gestione-utenti-item-outer-container
+{
+    width:100%;
+    /*padding: 5px;*/
+    padding-left: 5px;
+    padding-right: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 50px;
+    min-height: 50px;
+    /*overflow: hidden;*/
+}
+.gestione-utenti-item-button
+{
+    border: none;
+    background-color: transparent;
+    margin: 0px;
+    padding:0px;
+    padding-right: 5px;
+    padding-left: 5px;
+    outline: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    width:100%;
+    -webkit-appearance:none;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    border-radius: 4px;
+    height: 40px;
+    min-height: 40px;
+    /*overflow:hidden;*/
+}
+.utenti-item-button:hover
+{
+    background-color: #aaa;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.gestione-utenti-item-button img
+{
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    /*border:2px solid rgb(187, 187, 187);*/
+    height: 35px;
+    width: 35px;
+    min-height: 35px;
+    min-width: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    -webkit-appearance:none;
+    margin-right: 10px;
+    overflow: hidden;
+}
+.user-img-error
+{
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    height: 35px;
+    width: 35px;
+    min-height: 35px;
+    min-width: 35px;
+    border-radius: 50%;
+    margin-right: 10px;
+    overflow: hidden;
+    background-color: white;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.user-img-error span
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    color:rgb(48, 133, 214);
+    white-space: nowrap;
+    overflow: hidden;
+    /*text-overflow: ellipsis;*/
+}
+.gestione-utenti-item-button-span
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+}
+.gestione-utenti-item-button i
+{
+    font-size: 28px;
+    height: 25px;
+    margin-left:15px;
+}
+.popup-utenti-outer-container
+{
+    margin:20px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    width:calc(100% - 40px);
+    /*align-items: center;*/
+    justify-content: flex-start;
+}
+.popup-utenti-inner-container
+{
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    max-height: 550px;
+    overflow-y: auto;
+}
+.popup-utenti-row
+{
+    display: flex;
+    width: auto;
+    box-sizing: border-box;
+}
+.popup-utenti-row img
+{
+    width: 100px;
+    height: 100px;
+    margin:5px;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    border-radius: 4px;
+}
+.swal2-title
+{
+    color:#ddd;
+    font-size: 14px;
+    font-weight: normal;
+    font-family: 'Montserrat',sans-serif;
+}
+.swal2-popup
+{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+#popup-utenti-select
+{
+    width:150px;
+    background-color: #4d4d4d;
+    border:none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    height: 30px;
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+    box-sizing: border-box;
+    -webkit-appearance:none;
+}
+.popup-utenti-textarea,.popup-utenti-input
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    border:2px solid #4d4d4d;
+    background-color: #363636;
+    border-radius: 4px;
+    outline: none;
+    width:100%;
+    resize: none;
+    overflow: hidden;
+    -webkit-appearance:none;
+    box-sizing: border-box;
+    padding:5px;
+    font-weight: normal;
+}
+.popup-utenti-textarea
+{
+    height:60px;
+}
+.popup-utenti-button
+{
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    /*width:220px;*/
+    background-color: #4d4d4d;
+    border:none;
+    height: 30px;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    -webkit-appearance:none;
+}
+.popup-utenti-button span
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    display: flex;
+    flex-direction: row;
+}
+.popup-utenti-button i
+{
+    color:#ddd;
+    margin-left: 10px;
+}
+.popup-utenti-button:hover
+{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+#popupUtentiConfirmButton
+{
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    width:220px;
+    background-color: #4d4d4d;
+    border:none;
+    height: 40px;
+    outline: none;
+    border-radius: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    -webkit-appearance:none;
+}
+#popupUtentiConfirmButton span
+{
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:#ddd;
+    letter-spacing: 2px;
+    display: flex;
+    flex-direction: row;
+}
+#popupUtentiConfirmButton span div
+{
+    margin-left: 5px;
+}
+#popupUtentiConfirmButton i
+{
+    color:#ddd;
+    margin-left: 10px;
+}
+#popupUtentiConfirmButton:hover
+{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}

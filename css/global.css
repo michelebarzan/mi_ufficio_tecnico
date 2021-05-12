@@ -1,0 +1,15 @@
+.swal2-title
+{
+    font-family:'Montserrat',sans-serif;
+    font-size:15px;
+}
+.swal2-content
+{
+    font-family:'Montserrat',sans-serif;
+    font-size:12px;
+}
+.swal2-confirm,.swal2-cancel
+{
+    font-family:'Montserrat',sans-serif;
+    font-size:12px;
+}

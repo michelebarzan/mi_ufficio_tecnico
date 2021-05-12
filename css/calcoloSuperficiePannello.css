@@ -1,0 +1,576 @@
+body
+{
+	margin:0px auto;
+	width:100%;
+    height:100%;
+    overflow:hidden;
+}
+html
+{
+	width:100%;
+    height:100%;
+    overflow: hidden;
+}
+
+/*-------------------------------------------------------*/
+.reusable-control-bar
+{
+	background-color: rgba(0, 0, 0, 0.068);
+	display: flex;
+	align-items: start;
+	justify-content: start;
+	box-sizing: border-box;
+	padding-left: 5px;
+	width:100%;
+	height:40px;
+	border-radius: 4px;
+	flex-direction: row;
+	margin-top: 100px;
+	width:calc(100% - 100px);
+	margin-left: 50px;
+    margin-right:50px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+#actionBarCalcoloSuperficiePannello
+{
+	align-items: center;
+}
+.reusable-control-bar-margin
+{
+	margin:5px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.rcb-button-text-icon
+{
+	height:30px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-right: 5px;
+	background-color: rgba(255, 255, 255, 0.7);
+	box-sizing: border-box;
+	padding-left: 10px;
+	padding-right: 10px;
+    border:1px solid #bbb;
+	border-radius: 2px;
+	cursor: pointer;
+	outline:none;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.rcb-button-text-icon:hover
+{
+	background-color: rgba(255, 255, 255, 0.95);
+}
+.rcb-button-text-icon span
+{
+	font-family: 'Montserrat',sans-serif;
+	color:black;
+	font-weight: normal;
+	font-size:12px;
+}
+.rcb-button-text-icon i
+{
+	color:black;
+	font-weight: normal;
+	font-size:14px;
+}
+.rcb-select-container
+{
+	height:30px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-right: 5px;
+	background-color: rgba(255, 255, 255, 0.7);
+	box-sizing: border-box;
+	padding-left: 10px;
+	padding-right: 10px;
+	border:none;
+	border-radius: 2px;
+	outline:none;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: start;
+}
+.rcb-select-container:hover
+{
+	background-color: rgba(255, 255, 255, 0.95);
+}
+.rcb-select-container i
+{
+	color:black;
+	margin-right: 5px;
+}
+.rcb-select-container span
+{
+	font-family: 'Montserrat',sans-serif;
+	color:black;
+	font-weight: normal;
+	font-size:12px;
+	margin:0px;
+	padding:0px;
+	background-color: transparent;
+	border:none;
+	outline: none;
+}
+.rcb-select-container select
+{
+	font-family: 'Montserrat',sans-serif;
+	color:black;
+	font-weight: normal;
+	font-size:12px;
+	margin:0px;
+	padding:0px;
+	background-color: transparent;
+	border:none;
+	outline: none;
+	height:30px;
+	text-decoration: underline;
+}
+.rcb-select-container select option
+{
+	font-weight: normal;
+}
+.rcb-input-icon-container
+{
+	height:30px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-right: 5px;
+	background-color: rgba(255, 255, 255, 0.7);
+	box-sizing: border-box;
+	padding-left: 10px;
+	padding-right: 10px;
+	border:none;
+	border-radius: 2px;
+	outline:none;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: start;
+}
+.rcb-input-icon-container select
+{
+	font-family: 'Montserrat',sans-serif;
+	color:black;
+	font-weight: normal;
+	font-size:12px;
+	margin:0px;
+	padding:0px;
+	background-color: transparent;
+	border:none;
+	outline: none;
+	height:30px;
+}
+.rcb-input-icon-container input
+{
+	font-family: 'Montserrat',sans-serif;
+	color:black;
+	font-weight: normal;
+	font-size:12px;
+	margin:0px;
+	padding:0px;
+	background-color: transparent;
+	border:none;
+	outline: none;
+	height:30px;
+}
+.rcb-input-icon-container span
+{
+	font-family: 'Montserrat',sans-serif;
+	color:black;
+	font-weight: normal;
+	font-size:12px;
+	margin:0px;
+	padding:0px;
+	background-color: transparent;
+	border:none;
+	outline: none;
+}
+.rcb-input-icon-container i
+{
+	color:black;
+	cursor: pointer;
+}
+.rcb-input-icon-container:hover
+{
+	background-color: rgba(255, 255, 255, 0.95);
+}
+.rcb-input-icon-container:focus
+{
+	background-color: white;
+}
+.rcb-input-icon-container textarea
+{
+	font-family: 'Montserrat',sans-serif;
+	color:black;
+	font-weight: normal;
+	font-size:12px;
+	height: calc(100% - 5px);
+	padding:0px;
+	background-color: transparent;
+	border:none;
+	outline: none;
+	border:1px solid #ddd;
+	margin-left:10px;
+	margin-right:10px;
+	border-radius:2px;
+	padding:3.5px;
+	resize: horizontal;
+}
+.rcb-input
+{
+	height:30px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-right: 5px;
+	background-color: rgba(255, 255, 255, 0.7);
+	box-sizing: border-box;
+	padding-left: 10px;
+	padding-right: 10px;
+	border:none;
+	border-radius: 2px;
+	outline:none;
+	font-family: 'Montserrat',sans-serif;
+	color:black;
+	font-weight: normal;
+	font-size:12px;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.rcb-input:hover
+{
+	background-color: rgba(255, 255, 255, 0.95);
+}
+.rcb-input:focus
+{
+	background-color: white;
+}
+.reusable-row-container
+{
+	display: flex;
+	border-radius: 4px;
+	flex-direction: row;
+	width:100%;
+}
+.reusable-column-container
+{
+	display: flex;
+	border-radius: 4px;
+	flex-direction: column;
+	height:100%;
+}
+.reusable-inner-container
+{
+	background-color: rgba(255, 255, 255, 0.8);
+	box-sizing: border-box;
+	border-radius: 4px;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.reusable-inner-container-margin
+{
+	margin:10px;
+}
+/*-------------------------------------------------------*/
+#textareaElencoCodiciCabinaContainer
+{
+    padding: 0px;
+    border:1px solid #bbb;
+}
+#textareaElencoCodiciCabina
+{
+    resize: none;
+    width:190px;
+    font-size: 12px;
+    text-align: left;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    padding:4px;
+    box-sizing: border-box;
+    height: 100%;
+    margin:0px;
+    border:none;
+}
+#btnCheckCodiciCabina
+{
+    border:none;
+    background-color: transparent;
+    font-size: 15px;
+    outline: none;
+    cursor: pointer;
+    margin: 0px;
+    padding:0px;
+    margin-left:10px;
+    margin-right:10px
+}
+#btnCheckCodiciCabina:disabled
+{
+    cursor: not-allowed;
+    color:gray;
+}
+/*#textareaElencoCodiciCabina
+{
+    resize: none;
+    width:200px;
+    border:1px solid #bbb;
+    line-height:26px ;
+    font-size: 12px;
+    text-align: left;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    padding-left: 10px;
+}*/
+.conferma-codici-outer-container
+{
+    max-height: 500px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 100%;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+.conferma-codici-table
+{
+    border-collapse: collapse;
+    font-family: 'Montserrat',sans-serif;
+	color:black;
+	font-weight: normal;
+    font-size:12px;
+    width: calc(100% - 200px);
+    margin-left: 100px;
+    margin-right: 100px;
+}
+.conferma-codici-table tr
+{
+    border-bottom: 1px solid #ddd;
+    background-color: transparent;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.conferma-codici-table tr:hover
+{
+    background-color:  #ddd;
+}
+.conferma-codici-table td
+{
+    padding: 2.5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: right;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.conferma-codici-table td i
+{
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    color: black;
+    cursor: pointer;
+    font-size: 15px;
+}
+.conferma-codici-table td i:hover
+{
+    color:red;
+}
+#calcoloSuperficiePannelloContainer
+{
+    /*width: calc(100% - 50px);
+    margin-left: 25px;
+    margin-right: 25px;
+    padding-left: 25px;
+    padding-right: 25px;*/
+    width: calc(100% - 50px);
+    margin-left: 25px;
+    margin-right: 25px;
+    box-sizing: border-box;
+    margin-top:10px;
+    margin-bottom: 50px;
+    padding-top:10px;
+    padding-bottom: 10px;
+    height: calc(100% - 200px);
+    overflow:hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.calcolo-superficie-row
+{
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-radius: 2px;
+}
+.calcolo-superficie-table-title
+{
+    width:calc(50% - 10px);
+    height: 25px;
+    background-color: #404040;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+    box-sizing: border-box;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+}
+.calcolo-superficie-table-title div
+{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.calcolo-superficie-table-title div span
+{
+    font-family: 'Montserrat',sans-serif;
+	color:white;
+	font-weight: normal;
+    font-size:12px;
+}
+/*-----------------------------------------------*/
+#tableKitContainer,#tablePannelliContainer
+{
+    width:50%;
+    border-radius: 2px;
+    box-sizing: border-box;
+    min-height: 100%;
+    max-height: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.carica-altri-button
+{
+    background-color: transparent;
+    height: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border-radius: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    border:none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    color:black;
+    text-decoration: underline;
+}
+.carica-altri-button span
+{
+    font-family: 'Montserrat',sans-serif;
+	font-weight: normal;
+    font-size:12px;
+}
+.carica-altri-button:hover
+{
+    color:#4C91CB;
+}
+#tableKitContainer
+{
+    padding-left:10px ;
+    padding-right: 25px;
+}
+#tablePannelliContainer
+{
+    padding-left: 25px;
+    padding-right: 10px;
+}
+#pannelliTable,#kitTable
+{
+    width:100%;
+    /*margin:5px;*/
+    border-collapse: collapse;
+    table-layout: fixed;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    min-height: calc(100% - 50px);
+    max-height: calc(100% - 50px);
+    height: calc(100% - 50px);
+    display: block;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+#pannelliTable thead,#kitTable thead
+{
+    background-color: #404040;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    height: 40px;
+    padding-right: 17px;
+}
+#pannelliTable th,#kitTable th
+{
+    font-family: 'Quicksand',sans-serif;
+    color:white;
+    font-weight: normal;
+    font-size:12px;
+    text-align: left;
+    background-color: transparent;
+    padding:5px;
+	height: 40px;
+}
+#pannelliTable td,#kitTable td
+{
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Quicksand',sans-serif;
+    color:black;
+    font-weight: bold;
+    font-size:12px;
+    padding:5px;
+}
+#pannelliTable tbody tr,#kitTable tbody tr
+{
+    width:100%;
+}
+#pannelliTable tbody tr:nth-child(odd) ,#kitTable tbody tr:nth-child(odd) 
+{
+    background-color:rgba(76, 146, 203, 0.199);
+}
+#pannelliTable tbody tr:nth-child(even) ,#kitTable tbody tr:nth-child(even) 
+{
+    background-color:rgb(235, 235, 235);
+}
+#pannelliTable tbody, #pannelliTable thead,#kitTable tbody,#kitTable thead
+{
+    display: block;
+}
+#pannelliTable tbody ,#kitTable tbody
+{
+   overflow-y: scroll;
+   border-radius: 2px;
+   height: calc(100% - 40px);
+}
+/*-----------------------------------------------*/
+#inputNomeFileEsportaExcel
+{
+    width:250px;
+    margin-top:10px;
+    padding:7px;
+    font-family: 'Montserrat',sans-serif;
+    font-size: 12px;
+    color:black;
+    background-color: white;
+    border: 1px solid #bbb;
+    outline: none;
+    border-radius: 4px;
+}
