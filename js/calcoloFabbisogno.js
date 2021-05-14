@@ -6363,7 +6363,7 @@ async function getStatisticheMateriali()
                         infoMaterialeContainer.setAttribute("class","statistiche-materiali-item-info-materiale-container");
     
                         var div=document.createElement("div");
-                        div.setAttribute("style","width:calc(100% / 3);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;height: 55px;max-height: 55px;min-height: 55px;box-sizing:border-box;padding:10px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;");
+                        div.setAttribute("style","width:calc(100% / 3);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;height: 55px;max-height: 55px;min-height: 55px;box-sizing:border-box;padding:10px;overflow: hidden;");
     
                         var span=document.createElement("span");
                         span.setAttribute("style","color:#4C91CB;letter-spacing: 1px");
@@ -6376,12 +6376,13 @@ async function getStatisticheMateriali()
                         if(raggruppamentoMateriali)
                         {
                             var span=document.createElement("span");
-                            span.setAttribute("style","margin-top:5px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;");
+                            span.setAttribute("style","max-width:100%;margin-top:5px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;");
                             var nomiMateriali=[];
                             raggruppamento.materiali.forEach(materiale =>
                             {
                                 nomiMateriali.push(materiale.nome);
                             });
+							span.setAttribute("title",nomiMateriali.toString());
                             span.innerHTML=nomiMateriali.toString();
                             div.appendChild(span);
                         }
@@ -6390,7 +6391,8 @@ async function getStatisticheMateriali()
                             if(materiale.descrizione!="" && materiale.descrizione!="NULL" && materiale.descrizione!=null)
                             {
                                 var span=document.createElement("span");
-                                span.setAttribute("style","margin-top:5px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;")
+                                span.setAttribute("style","max-width:100%;margin-top:5px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;");
+								span.setAttribute("title",materiale.descrizione);
                                 span.innerHTML=materiale.descrizione;
                                 div.appendChild(span);
                             }

@@ -67,10 +67,19 @@
         $subQuery_materiali_calcolo_progettato_normale="";
         if(sizeof($materiali_calcolo_progettato_normale)>0)
         {
-            $subQuery_materiali_calcolo_progettato_normale="UNION SELECT CONVERT(FLOAT,SUM(mi_db_tecnico.dbo.peso_qnt_cabine.qnt_lorda)/mi_db_tecnico.dbo.peso_qnt_cabine.confezione) AS qnt, dbo.anagrafica_materiali.raggruppamento, dbo.cabine_commesse_view.commessa, 'progettato' AS voce, '#DA6969' AS colore
+            /*$subQuery_materiali_calcolo_progettato_normale="UNION SELECT CONVERT(FLOAT,SUM(mi_db_tecnico.dbo.peso_qnt_cabine.qnt_lorda)/mi_db_tecnico.dbo.peso_qnt_cabine.confezione) AS qnt, dbo.anagrafica_materiali.raggruppamento, dbo.cabine_commesse_view.commessa, 'progettato' AS voce, '#DA6969' AS colore
                                                             FROM mi_db_tecnico.dbo.peso_qnt_cabine INNER JOIN dbo.anagrafica_materiali ON mi_db_tecnico.dbo.peso_qnt_cabine.id_materia_prima = dbo.anagrafica_materiali.materia_prima INNER JOIN dbo.cabine_commesse_view ON mi_db_tecnico.dbo.peso_qnt_cabine.codice_cabina = dbo.cabine_commesse_view.codice_cabina
                                                             GROUP BY dbo.anagrafica_materiali.raggruppamento, dbo.cabine_commesse_view.commessa,mi_db_tecnico.dbo.peso_qnt_cabine.confezione
-                                                            HAVING (dbo.cabine_commesse_view.commessa = $id_commessa)  AND (dbo.anagrafica_materiali.raggruppamento IN ($materiali_calcolo_progettato_normale_in))";
+                                                            HAVING (dbo.cabine_commesse_view.commessa = $id_commessa)  AND (dbo.anagrafica_materiali.raggruppamento IN ($materiali_calcolo_progettato_normale_in))";*/
+															
+			$subQuery_materiali_calcolo_progettato_normale="UNION SELECT SUM(qnt) AS qnt, raggruppamento, commessa, voce, colore
+															FROM (SELECT CONVERT(FLOAT, mi_db_tecnico.dbo.peso_qnt_cabine.qnt_lorda / mi_db_tecnico.dbo.peso_qnt_cabine.confezione) AS qnt, anagrafica_materiali_2.raggruppamento, dbo.cabine_commesse_view.commessa, 
+																												'progettato' AS voce, '#DA6969' AS colore
+																					  FROM mi_db_tecnico.dbo.peso_qnt_cabine INNER JOIN
+																												dbo.anagrafica_materiali AS anagrafica_materiali_2 ON mi_db_tecnico.dbo.peso_qnt_cabine.id_materia_prima = anagrafica_materiali_2.materia_prima INNER JOIN
+																												dbo.cabine_commesse_view ON mi_db_tecnico.dbo.peso_qnt_cabine.codice_cabina = dbo.cabine_commesse_view.codice_cabina
+																					  WHERE (dbo.cabine_commesse_view.commessa = $id_commessa) AND (anagrafica_materiali_2.raggruppamento IN ($materiali_calcolo_progettato_normale_in))) AS t
+															GROUP BY raggruppamento, commessa, voce, colore";
         }
         
         $subQuery_materiali_calcolo_progettato_alternativo="";
