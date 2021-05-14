@@ -1934,6 +1934,34 @@ html
 	color:#4C91CB;
 }
 /*-----------------------------------*/
+.in-page-nav-bar-top-button
+{
+	border-radius: 4px;
+	border:1px solid #bbb;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	background-color: white;
+	height: 30px;
+	box-sizing: border-box;
+	padding-left: 10px;
+	padding-right: 10px;
+	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.in-page-nav-bar-top-button span
+{
+	margin-right: 5px;
+	font-family: 'Montserrat',sans-serif;
+	font-size: 12px;
+}
+.in-page-nav-bar-top-button:hover
+{
+	background-color: #F1F1F1;
+	color:rgb(76, 145, 203);
+}
+/*-----------------------------------*/
 .handsontable.as-you-type-demo tr:first-child th {
 	vertical-align: bottom;
   }

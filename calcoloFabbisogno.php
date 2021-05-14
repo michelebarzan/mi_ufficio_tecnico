@@ -30,6 +30,10 @@
 					<span>Commessa</span>
 					<select id="selectCommessaCalcoloFabbisogno" onchange="setCookie('commessaFabbisognoMateriali',this.value);getView()"></select>
 				</div>
+				<button class="in-page-nav-bar-top-button" style="margin-left:auto" onclick="importaAnagraficheCommessa(true)">
+					<span>Importa anagrafiche</span>
+					<i class="fad fa-file-import" style="margin-left:5px"></i>
+				</button>
 			</div>
 			<div class="in-page-nav-bar-row">
 				<button class="in-page-nav-bar-button" disabled id="btn_anagrafica_materiali" onclick="getMascheraAnagraficaMateriali(this)">
@@ -83,6 +87,10 @@
 					<span>Famiglie materiali</span>
 					<i class="fad fa-object-group" style="margin-left:5px"></i>
 				</button>
+				<!--<button class="rcb-button-text-icon" onclick="importaAnagraficheCommessa(true)">
+					<span>Importa anagrafiche commessa</span>
+					<i class="fad fa-file-import" style="margin-left:5px"></i>
+				</button>-->
 			</div>
 			<div id="actionBarImportazioneItems" class="reusable-control-bar-items">
 				<button class="rcb-button-text-icon" onclick="getPopupInserimentoManuale('inserimento_fabbisogno_materiali')">

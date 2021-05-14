@@ -71,6 +71,11 @@
         $viewColumn["readOnly"]=true;
         array_push($viewColumns,$viewColumn);
 
+        $viewColumn["COLUMN_NAME"]="descrizione";
+        $viewColumn["type"]="text";
+        $viewColumn["readOnly"]=true;
+        array_push($viewColumns,$viewColumn);
+
         $viewColumn["COLUMN_NAME"]="um";
         $viewColumn["type"]="text";
         $viewColumn["readOnly"]=true;
@@ -287,8 +292,8 @@
     }
     else
     {
-        $query="SELECT id_materiale,materiale,um,famiglia,SUM(calcolato) AS calcolato,SUM(richiesto) AS richiesto,SUM(progettato) AS progettato ,SUM([delta_richiesto-calcolato]) AS [delta_richiesto-calcolato],SUM([delta_calcolato-progettato]) AS [delta_calcolato-progettato],SUM([delta_richiesto-progettato]) AS [delta_richiesto-progettato]
-        FROM (SELECT anagrafica_materiali.id_materiale,anagrafica_materiali.nome as materiale,anagrafica_materiali.um,raggruppamenti_materiali.nome as famiglia,convert(float,isnull(PivotTable.calcolato,0)) as calcolato,convert(float,isnull(PivotTable.richiesto,0)) as richiesto,convert(float,isnull(PivotTable.progettato,0)) as progettato , convert(float,isnull(richiesto,0) - isnull(calcolato,0)) as [delta_richiesto-calcolato], convert(float,isnull(calcolato,0)-isnull(progettato,0)) as [delta_calcolato-progettato], convert(float,isnull(richiesto,0)-isnull(progettato,0)) as [delta_richiesto-progettato]
+        $query="SELECT id_materiale,materiale,descrizione,um,famiglia,SUM(calcolato) AS calcolato,SUM(richiesto) AS richiesto,SUM(progettato) AS progettato ,SUM([delta_richiesto-calcolato]) AS [delta_richiesto-calcolato],SUM([delta_calcolato-progettato]) AS [delta_calcolato-progettato],SUM([delta_richiesto-progettato]) AS [delta_richiesto-progettato]
+        FROM (SELECT anagrafica_materiali.id_materiale,anagrafica_materiali.nome as materiale,anagrafica_materiali.descrizione,anagrafica_materiali.um,raggruppamenti_materiali.nome as famiglia,convert(float,isnull(PivotTable.calcolato,0)) as calcolato,convert(float,isnull(PivotTable.richiesto,0)) as richiesto,convert(float,isnull(PivotTable.progettato,0)) as progettato , convert(float,isnull(richiesto,0) - isnull(calcolato,0)) as [delta_richiesto-calcolato], convert(float,isnull(calcolato,0)-isnull(progettato,0)) as [delta_calcolato-progettato], convert(float,isnull(richiesto,0)-isnull(progettato,0)) as [delta_richiesto-progettato]
                 FROM 
                 ($q) AS SourceTable  
                 PIVOT  
@@ -296,7 +301,7 @@
                 sum(qnt)
                 FOR voce IN ([calcolato],[richiesto],[progettato])  
                 ) AS PivotTable INNER JOIN dbo.anagrafica_materiali ON PivotTable.materiale = dbo.anagrafica_materiali.id_materiale LEFT OUTER JOIN dbo.raggruppamenti_materiali ON dbo.anagrafica_materiali.raggruppamento = dbo.raggruppamenti_materiali.id_raggruppamento) AS t
-                GROUP BY id_materiale,materiale,um,famiglia";
+                GROUP BY id_materiale,materiale,descrizione,um,famiglia";
     }
 
     $r=sqlsrv_query($conn,$query);

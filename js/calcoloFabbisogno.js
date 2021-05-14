@@ -14,15 +14,14 @@ var riepilogoCommesse;
 var statisticheMaterialiPivot;
 var shouldCallbackPopupNoteMaterialiCommesse;
 var raggruppamentoRiepilogoCommesse="materiali";
-var hots_dettagli_richieste_materiali=[];
-var hotFileCalcoloFabbisogno;
-var hotMaterialiCalcoloFabbisogno;
-var hotAnagraficaMateriali;
-var hotStatisticheMaterialiPivot;
-var hotRiepilogoCommesse;
-var hotAnagraficaGruppi;
-var hotRaggruppamentiMateriali;
-var hotFormatiLamiere;
+var hot;
+var hot;
+var hot;
+var hot;
+var hot;
+var hot;
+var hot;
+var hot;
 var richiesteSelezionateEsportaRichieste=[];
 var esportaRichieste=false;
 
@@ -78,6 +77,8 @@ window.addEventListener("load", async function(event)
         const element = aggiornamentoPesoQntCabineElements[index];
         element.innerHTML="Progettato aggiornato al <b>"+dataAggiornamentoPesoQntCabine+"</b>";
     }
+
+    importaAnagraficheCommessa(false);
 });
 function getView()
 {
@@ -882,6 +883,7 @@ async function getHotDettagliRichiesteMaterialiView(table,containerId,id_richies
 
     var table=document.createElement("table");
     table.setAttribute("class","dettagli-richiesta-table");
+    table.setAttribute("id","dettagliRichiestaTable"+id_richiesta);
 
     var tr=document.createElement("tr");
     response.colHeaders.forEach(header =>
@@ -904,109 +906,6 @@ async function getHotDettagliRichiesteMaterialiView(table,containerId,id_richies
         table.appendChild(tr);
     });
     document.getElementById(containerId).appendChild(table);
-
-    /*var colWidth=((container.offsetWidth-710)/(response.columns.length-3))-3;
-    var colWidths=[colWidth,220,colWidth,colWidth,colWidth,220,colWidth,220,colWidth];
-    
-    if(response.data.length>0)
-    {
-        var height=1;
-        container.style.height=height;
-        container.style.marginTop="10px";
-
-        destroyHots("hots_dettagli_richieste_materiali");
-        
-		if(hots_dettagli_richieste_materiali[id_richiesta]!=undefined)
-            hots_dettagli_richieste_materiali[id_richiesta].destroy();
-        hots_dettagli_richieste_materiali[id_richiesta] = new Handsontable
-        (
-            container,
-            {
-                data: response.data,
-                rowHeaders: true,
-                manualColumnResize: true,
-                colHeaders: response.colHeaders,
-                filters: true,
-                dropdownMenu: true,
-                headerTooltips: true,
-                language: 'it-IT',
-                contextMenu: true,
-                width:"100%",
-                colWidths,
-                height,
-                columnSorting: true,
-                columns:response.columns,
-                afterChange: (changes) =>
-                {
-                    if(changes!=null)
-                    {
-                        changes.forEach(([row, prop, oldValue, newValue]) =>
-                        {
-                            if(prop=="qnt" || prop=="n_fogli_larghi" || prop=="n_fogli_stretti")
-                            {
-                                var id_dettaglio=hots_dettagli_richieste_materiali[id_richiesta].getDataAtCell(row, 0);
-                                aggiornaRigaHot(id_dettaglio,prop,newValue,table,"id_dettaglio");
-                            }
-                        });
-                    }
-                },
-                beforeCreateRow: (index,amount,source) =>
-                {
-                    return false;
-                },
-                beforeRemoveRow: (index,amount,physicalRows,source)  =>
-                {
-                    return false;
-                }
-            }
-        );
-        hideHotDisplayLicenceInfo();
-        $(".handsontable .changeType").css
-        ({
-            "background": "#eee",
-            "border-radius": "0",
-            "border": "none",
-            "color": "#404040",
-            "font-size": "14px",
-            "line-height": "normal",
-            "padding": "0px",
-            "margin": "0px",
-            "float": "right"
-        });
-
-        var interval_check_hots_dettagli_richieste_materiali_heights;
-        try {
-            clearInterval(interval_check_hots_dettagli_richieste_materiali_heights);
-        } catch (error) {}
-
-        interval_check_hots_dettagli_richieste_materiali_heights = setInterval(() => 
-        {
-            try {
-                var overflow=checkOverflow(container.getElementsByClassName("ht_master")[0].getElementsByClassName("wtHolder")[0]);
-            } catch (error) {
-                var overflow=true;
-            }
-            if(overflow)
-            {
-                if(container.offsetHeight<250)
-                {
-                    container.style.height=(container.offsetHeight+15)+"px";
-                    hots_dettagli_richieste_materiali[id_richiesta].render();
-                }
-                else
-                    clearInterval(interval_check_hots_dettagli_richieste_materiali_heights);
-            }
-            else
-            {
-                clearInterval(interval_check_hots_dettagli_richieste_materiali_heights);
-            }
-        }, 10);
-    }
-    else
-    {
-        container.style.height="0px";
-        container.style.marginTop="0px";
-    }*/
 }
 function getHotDettagliRichiesteMaterialiViewData(table,id_richiesta)
 {
@@ -1109,7 +1008,7 @@ function inserisciDettagliRichiestaMateriale(id_richiesta)
         }
     });
 }
-function eliminaDettagliRichiestaMateriale(id_dettaglio,tr)
+/*function eliminaDettagliRichiestaMateriale(id_dettaglio,tr)
 {
     $.post("eliminaDettagliRichiestaMaterialeCalcoloFabbisogno.php",
     {
@@ -1138,7 +1037,7 @@ function eliminaDettagliRichiestaMateriale(id_dettaglio,tr)
             }
         }
     });
-}
+}*/
 function aggiornaDettagliRichiestaMateriale(valore,id_dettaglio,colonna,input)
 {
     var commessa=document.getElementById("selectCommessaCalcoloFabbisogno").value;
@@ -1172,7 +1071,7 @@ function aggiornaDettagliRichiestaMateriale(valore,id_dettaglio,colonna,input)
         }
     });
 }
-function fixTables()
+/*function fixTables()
 {
     try {
         var tables=document.getElementsByClassName("dettagli-richiesta-table");
@@ -1207,7 +1106,7 @@ function fixTables()
     } catch (error) {
         
     }
-}
+}*/
 function aggiornaGruppoRichiestaMateriale(gruppo,id_richiesta)
 {
     $.post("aggiornaGruppoRichiestaMaterialeCalcoloFabbisogno.php",
@@ -2025,7 +1924,7 @@ async function getDatiFileImportazione(id_file)
     if(response.data.length>0)
     {
         destroyHots();
-        hotFileCalcoloFabbisogno = new Handsontable
+        hot = new Handsontable
         (
             container,
             {
@@ -2054,6 +1953,13 @@ async function getDatiFileImportazione(id_file)
                 {
                     return false;
                 },
+                afterDropdownMenuShow: (dropdownMenu) =>
+                {
+                    document.getElementsByClassName("htUIMultipleSelectSearch")[0].getElementsByTagName("input")[0].addEventListener("click", function()
+                    {
+                        document.getElementsByClassName("htUIClearAll")[0].getElementsByTagName("a")[0].click();
+                    });
+                }
             }
         );
         hideHotDisplayLicenceInfo();
@@ -4215,7 +4121,7 @@ async function getTabellaDati(button)
     if(response.data.length>0)
     {
         destroyHots();
-        hotMaterialiCalcoloFabbisogno = new Handsontable
+        hot = new Handsontable
         (
             container,
             {
@@ -4237,7 +4143,7 @@ async function getTabellaDati(button)
                     for (let i = 0; i < physicalRows.length; i++)
                     {
                         const indice = physicalRows[i];
-                        var id_importazione=hotMaterialiCalcoloFabbisogno.getDataAtCell(indice, 0);
+                        var id_importazione=hot.getDataAtCell(indice, 0);
                         eliminaRigaMaterialiCalcoloFabbisogno(id_importazione);
                     }
                 },
@@ -4249,6 +4155,13 @@ async function getTabellaDati(button)
                 {
                     return false;
                 },
+                afterDropdownMenuShow: (dropdownMenu) =>
+                {
+                    document.getElementsByClassName("htUIMultipleSelectSearch")[0].getElementsByTagName("input")[0].addEventListener("click", function()
+                    {
+                        document.getElementsByClassName("htUIClearAll")[0].getElementsByTagName("a")[0].click();
+                    });
+                }
             }
         );
         hideHotDisplayLicenceInfo();
@@ -4771,7 +4684,7 @@ async function getHotAnagraficaMateriali()
     if(anagraficaMateriali.data.length>0)
     {
         destroyHots();
-        hotAnagraficaMateriali = new Handsontable
+        hot = new Handsontable
         (
             container,
             {
@@ -4798,7 +4711,7 @@ async function getHotAnagraficaMateriali()
                             {
                                 if(oldValue!=newValue)
                                 {
-                                    var id_materiale=hotAnagraficaMateriali.getDataAtCell(row, 0);
+                                    var id_materiale=hot.getDataAtCell(row, 0);
                                     aggiornaRigaAnagraficaMateriali(id_materiale,prop,newValue);
                                     checkFamigliaMateriaPrima();
                                 }
@@ -4815,9 +4728,16 @@ async function getHotAnagraficaMateriali()
                     for (let i = 0; i < physicalRows.length; i++)
                     {
                         const indice = physicalRows[i];
-                        var id_materiale=hotAnagraficaMateriali.getDataAtCell(index, 0);
+                        var id_materiale=hot.getDataAtCell(index, 0);
                         eliminaRigaAnagraficaMateriali(id_materiale);
                     }
+                },
+                afterDropdownMenuShow: (dropdownMenu) =>
+                {
+                    document.getElementsByClassName("htUIMultipleSelectSearch")[0].getElementsByTagName("input")[0].addEventListener("click", function()
+                    {
+                        document.getElementsByClassName("htUIClearAll")[0].getElementsByTagName("a")[0].click();
+                    });
                 }
             }
         );
@@ -4851,13 +4771,13 @@ async function checkFamigliaMateriaPrima()
     var raggruppamento_calcolo_progettato_alternativo=await getRaggruppamentoCalcoloProgettatoAlternativo();
     try {
         var cellsToEmpty=[];
-        hotAnagraficaMateriali.updateSettings
+        hot.updateSettings
         ({
             cells: function (row, col, prop)
             {
                 var cellProperties = {};
 
-                if(prop=="materia_prima" && hotAnagraficaMateriali.getDataAtRowProp(row, "famiglia")==raggruppamento_calcolo_progettato_alternativo)
+                if(prop=="materia_prima" && hot.getDataAtRowProp(row, "famiglia")==raggruppamento_calcolo_progettato_alternativo)
                 {
                     cellsToEmpty.push(row+"_"+col);
                 }
@@ -4883,15 +4803,15 @@ async function checkFamigliaMateriaPrima()
         });
         cellsToEmptyClean.forEach(cellToEmpty =>
         {
-            hotAnagraficaMateriali.setDataAtCell(cellToEmpty.row, cellToEmpty.col, "Nessuna");
+            hot.setDataAtCell(cellToEmpty.row, cellToEmpty.col, "Nessuna");
         });
-        hotAnagraficaMateriali.updateSettings
+        hot.updateSettings
         ({
             cells: function (row, col, prop)
             {
                 var cellProperties = {};
 
-                if(prop=="materia_prima" && hotAnagraficaMateriali.getDataAtRowProp(row, "famiglia")==raggruppamento_calcolo_progettato_alternativo)
+                if(prop=="materia_prima" && hot.getDataAtRowProp(row, "famiglia")==raggruppamento_calcolo_progettato_alternativo)
                 {
                     cellProperties.editor = false;
                 }
@@ -4949,7 +4869,7 @@ function aggiornaRigaAnagraficaMateriali(id_materiale,colonna,valore)
                         onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="#ddd";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
                     }).then((result) => 
                     {
-                        hotAnagraficaMateriali.destroy();
+                        hot.destroy();
                         getHotAnagraficaMateriali();
                     });
                     //window.alert("Esiste già un materiale con questo nome");
@@ -4985,7 +4905,7 @@ function creaRigaAnagraficaMateriali(placeholderRow,index)
                         onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="#ddd";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
                     }).then((result) => 
                     {
-                        hotAnagraficaMateriali.destroy();
+                        hot.destroy();
                         getHotAnagraficaMateriali();
                     });
                 }
@@ -4995,10 +4915,10 @@ function creaRigaAnagraficaMateriali(placeholderRow,index)
                         getHotAnagraficaMateriali();
                     else
                     {
-                        hotAnagraficaMateriali.setDataAtCell(index, 0, response);
-                        hotAnagraficaMateriali.setDataAtCell(index, 3, "da_compilare");
-                        hotAnagraficaMateriali.setDataAtCell(index, 4, "Nessuno");
-                        hotAnagraficaMateriali.setDataAtCell(index, 5, "Nessuna");
+                        hot.setDataAtCell(index, 0, response);
+                        hot.setDataAtCell(index, 3, "da_compilare");
+                        hot.setDataAtCell(index, 4, "Nessuno");
+                        hot.setDataAtCell(index, 5, "Nessuna");
                     }
                 }
                 
@@ -5025,7 +4945,7 @@ function eliminaRigaAnagraficaMateriali(id_materiale)
                     onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="#ddd";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
                 }).then((result) => 
                 {
-                    hotAnagraficaMateriali.destroy();
+                    hot.destroy();
                     getHotAnagraficaMateriali();
                 });
                 //window.alert("Impossibile eliminare il materiale.\n\nAssicurati che non sia già stato usato");
@@ -5435,6 +5355,24 @@ async function getPopupScegliMateriali()
     row.appendChild(input);
 
     outerContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    row.setAttribute("style","margin-top:5px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;cursor:pointer");
+    row.setAttribute("onclick","this.getElementsByTagName('input')[0].checked=!this.getElementsByTagName('input')[0].checked;toggleSelectAllFiltraMateriali()");
+
+    var input=document.createElement("input");
+    input.setAttribute("type","checkbox");
+    input.setAttribute("onchange","toggleSelectAllFiltraMateriali();");
+    input.setAttribute("onclick","disableCheckboxPopupScegliMateriali(event)");
+    input.setAttribute("id","popupScegliMaterialiCheckboxTutti");
+    row.appendChild(input);
+
+    var span=document.createElement("span");
+    span.setAttribute("style","font-family:'Montserrat',sans-serif;font-size:12px;color:#ddd;margin-left:5px");
+    span.innerHTML="Seleziona tutti";
+    row.appendChild(span);
+
+    outerContainer.appendChild(row);
     
     var checkboxContainer=document.createElement("div")
     checkboxContainer.setAttribute("class","dark-popup-row");
@@ -5498,6 +5436,17 @@ async function getPopupScegliMateriali()
                     getTablePopupScegliMateriali();
                 }
     });
+}
+function toggleSelectAllFiltraMateriali()
+{
+    var checked=document.getElementById("popupScegliMaterialiCheckboxTutti").checked;
+    var checkboxes=document.getElementsByClassName("popup-scegli-materiali-checkbox");
+    checkboxes.forEach(checkbox =>
+    {
+        if(checkbox.parentElement.parentElement.style.display!="none")
+            checkbox.checked=checked;
+    });
+    checkMaterialiPopupMateriali();
 }
 async function getTablePopupScegliMateriali()
 {
@@ -6007,7 +5956,7 @@ async function getStatisticheMateriali()
                     if(prop=="note" && !raggruppamentoMateriali)
                     {
                         try {
-                            var materiale=hotStatisticheMaterialiPivot.getDataAtCell(row, 0);
+                            var materiale=hot.getDataAtCell(row, 0);
 
                             var nNote=value;
                             td.innerHTML="";
@@ -6032,7 +5981,7 @@ async function getStatisticheMateriali()
                     if(prop=="delta_richiesto-calcolato")
                     {
                         try {
-                            var calcolato=hotStatisticheMaterialiPivot.getDataAtCell(row, 3);
+                            var calcolato=hot.getDataAtCell(row, 3);
                             if(value<0 && calcolato!=0)
                             {
                                 td.style.background="#e34208";
@@ -6043,7 +5992,7 @@ async function getStatisticheMateriali()
                     if(prop=="delta_calcolato-progettato")
                     {
                         try {
-                            var calcolato=hotStatisticheMaterialiPivot.getDataAtCell(row, 3);
+                            var calcolato=hot.getDataAtCell(row, 3);
                             if(value<0 && calcolato!=0)
                             {
                                 td.style.background="#e34208";
@@ -6057,9 +6006,9 @@ async function getStatisticheMateriali()
                 if(raggruppamentoMateriali)
                     var colWidths = [250,50 ,400,150,150,150,280,280,280];
                 else
-                    var colWidths = [400,50 ,200,150,150,150,280,280,280,150];
+                    var colWidths = [300,400,50 ,200,150,150,150,280,280,280,150];
 
-                hotStatisticheMaterialiPivot = new Handsontable
+                hot = new Handsontable
                 (
                     container,
                     {
@@ -6097,6 +6046,13 @@ async function getStatisticheMateriali()
                             cellProperties.renderer = "statisticheMaterialiCellRenderer";
                 
                             return cellProperties;
+                        },
+                        afterDropdownMenuShow: (dropdownMenu) =>
+                        {
+                            document.getElementsByClassName("htUIMultipleSelectSearch")[0].getElementsByTagName("input")[0].addEventListener("click", function()
+                            {
+                                document.getElementsByClassName("htUIClearAll")[0].getElementsByTagName("a")[0].click();
+                            });
                         }
                     }
                 );
@@ -7624,6 +7580,7 @@ function getPopupRaggruppamentoMateriali()
 }
 function checkMaterialiPopupMateriali()
 {
+    var tot=0;
     var n=0;
     var checkboxes=document.getElementsByClassName("popup-scegli-materiali-checkbox");
     for (let index = 0; index < checkboxes.length; index++)
@@ -7631,6 +7588,8 @@ function checkMaterialiPopupMateriali()
         const checkbox = checkboxes[index];
         if(checkbox.checked)
             n++;
+        if(checkbox.parentElement.parentElement.style.display!="none")
+            tot++;
     }
 
     if(n<=5)
@@ -7640,7 +7599,8 @@ function checkMaterialiPopupMateriali()
     if(n>10)
         var color="#DA6969";
 
-	try{
+	try
+    {
 		if(raggruppamentoMateriali)
 			document.getElementById("nMaterialiContainerPopupMateriali").innerHTML=n+" famiglie selezionate";
 		else
@@ -7648,8 +7608,9 @@ function checkMaterialiPopupMateriali()
 		document.getElementById("nMaterialiContainerPopupMateriali").style.color=color;
 	}
 	catch(e){}
-		
-	}
+	
+    document.getElementById("popupScegliMaterialiCheckboxTutti").checked=n==tot;
+}
 async function getMascheraRiepilogoCommesse()
 {
     var button=document.getElementById("btn_riepilogo_commesse");
@@ -7728,8 +7689,8 @@ async function getHotRiepilogoCommesse(containerId)
             if(prop=="note")
             {
                 try {
-                    var materiale=hotRiepilogoCommesse.getDataAtCell(row, 1);
-                    var commessa=hotRiepilogoCommesse.getDataAtCell(row, 0);
+                    var materiale=hot.getDataAtCell(row, 1);
+                    var commessa=hot.getDataAtCell(row, 0);
 
                     var nNote=value;
                     td.innerHTML="";
@@ -7781,7 +7742,7 @@ async function getHotRiepilogoCommesse(containerId)
         }
         Handsontable.renderers.registerRenderer('riepilogoCommesseCellRenderer', riepilogoCommesseCellRenderer);
 
-        hotRiepilogoCommesse = new Handsontable
+        hot = new Handsontable
         (
             container,
             {
@@ -7819,6 +7780,13 @@ async function getHotRiepilogoCommesse(containerId)
                     cellProperties.renderer = "riepilogoCommesseCellRenderer";
         
                     return cellProperties;
+                },
+                afterDropdownMenuShow: (dropdownMenu) =>
+                {
+                    document.getElementsByClassName("htUIMultipleSelectSearch")[0].getElementsByTagName("input")[0].addEventListener("click", function()
+                    {
+                        document.getElementsByClassName("htUIClearAll")[0].getElementsByTagName("a")[0].click();
+                    });
                 }
             }
         );
@@ -7910,7 +7878,7 @@ function esportaRiepilogoCommesse()
             });
             table.appendChild(tr);
         
-            var data=hotRiepilogoCommesse.getData();
+            var data=hot.getData();
             data.forEach(row =>
             {
                 var tr=document.createElement("tr");
@@ -8003,7 +7971,7 @@ function esportaExcelStatisticheMateriali()
                 });
                 table.appendChild(tr);
             
-                var data=hotStatisticheMaterialiPivot.getData();
+                var data=hot.getData();
                 data.forEach(row =>
                 {
                     var tr=document.createElement("tr");
@@ -8121,7 +8089,7 @@ async function getHotAnagraficaGruppi(table,containerId,colWidths)
 
     if(response.data.length>0)
     {
-        hotAnagraficaGruppi = new Handsontable
+        hot = new Handsontable
         (
             container,
             {
@@ -8147,7 +8115,7 @@ async function getHotAnagraficaGruppi(table,containerId,colWidths)
                         {
                             if(prop!=response.primaryKey)
                             {
-                                var id=hotAnagraficaGruppi.getDataAtCell(row, 0);
+                                var id=hot.getDataAtCell(row, 0);
                                 aggiornaRigaHot(id,prop,newValue,table,response.primaryKey);
                             }
                         });
@@ -8155,25 +8123,24 @@ async function getHotAnagraficaGruppi(table,containerId,colWidths)
                 },
                 afterCreateRow: (index,amount,source) =>
                 {
-                    creaRigaHot(index,table,response.primaryKey,hotAnagraficaGruppi);
+                    creaRigaHot(index,table,response.primaryKey,hot);
                 },
                 beforeRemoveRow: (index,amount,physicalRows,source)  =>
                 {
                     for (let i = 0; i < physicalRows.length; i++)
                     {
                         const indice = physicalRows[i];
-                        var id=hotAnagraficaGruppi.getDataAtCell(indice, 0);
+                        var id=hot.getDataAtCell(indice, 0);
                         eliminaRigaHot(id,table,response.primaryKey);
                     }
-                }/*,
+                },
                 afterDropdownMenuShow: (dropdownMenu) =>
                 {
-                    document.getElementsByClassName("htDropdownMenu")[0].style.zIndex="9999";
-                },
-                afterContextMenuShow: (dropdownMenu) =>
-                {
-                    document.getElementsByClassName("htContextMenu")[0].style.zIndex="9999";
-                }*/
+                    document.getElementsByClassName("htUIMultipleSelectSearch")[0].getElementsByTagName("input")[0].addEventListener("click", function()
+                    {
+                        document.getElementsByClassName("htUIClearAll")[0].getElementsByTagName("a")[0].click();
+                    });
+                }
             }
         );
         hideHotDisplayLicenceInfo();
@@ -8280,8 +8247,8 @@ async function getHotRaggruppamentiMateriali()
 
     if(response.data.length>0)
     {
-        destroyHots(["hotAnagraficaMateriali"]);
-        hotRaggruppamentiMateriali = new Handsontable
+        destroyHots(["hot"]);
+        hot = new Handsontable
         (
             container,
             {
@@ -8306,7 +8273,7 @@ async function getHotRaggruppamentiMateriali()
                         {
                             if(prop!=response.primaryKey)
                             {
-                                var id=hotRaggruppamentiMateriali.getDataAtCell(row, 0);
+                                var id=hot.getDataAtCell(row, 0);
                                 aggiornaRigaHotRaggruppamentiMateriali(id,prop,newValue,table,response.primaryKey);
                             }
                         });
@@ -8321,10 +8288,10 @@ async function getHotRaggruppamentiMateriali()
                     for (let i = 0; i < physicalRows.length; i++)
                     {
                         const indice = physicalRows[i];
-                        var id=hotRaggruppamentiMateriali.getDataAtCell(indice, 0);
+                        var id=hot.getDataAtCell(indice, 0);
                         eliminaRigaHotRaggruppamentiMateriali(id,table,response.primaryKey);
                     }
-                }/*,
+                },
                 afterDropdownMenuShow: (dropdownMenu) =>
                 {
                     document.getElementsByClassName("htDropdownMenu")[0].style.zIndex="9999";
@@ -8332,22 +8299,10 @@ async function getHotRaggruppamentiMateriali()
                 afterContextMenuShow: (dropdownMenu) =>
                 {
                     document.getElementsByClassName("htContextMenu")[0].style.zIndex="9999";
-                }*/
+                }
             }
         );
         hideHotDisplayLicenceInfo();
-        /*$(".handsontable .changeType").css
-        ({
-            "background": "#eee",
-            "border-radius": "0",
-            "border": "none",
-            "color": "#404040",
-            "font-size": "14px",
-            "line-height": "normal",
-            "padding": "0px",
-            "margin": "0px",
-            "float": "right"
-        });*/
 
         if(response.n==1)
             document.getElementById("alertSpanFamiglieMateriali").innerHTML="";
@@ -8374,9 +8329,9 @@ function aggiornaRigaHotRaggruppamentiMateriali(id,colonna,valore,table,primaryK
                 if(response==1)
                     document.getElementById("alertSpanFamiglieMateriali").innerHTML="";
                 if(response>1)
-                    document.getElementById("alertSpanFamiglieMateriali").innerHTML="Può essere utilizzato solo un gruppo per calcolare il progettato in modo alternativo. <b><u>IL PROGRAMMA POTREBBE NON FUNZIONARE CORRETTAMENTE</u></b>";
+                    document.getElementById("alertSpanFamiglieMateriali").innerHTML="Può essere utilizzata solo una famiglia per calcolare il progettato in modo alternativo. <b><u>IL PROGRAMMA POTREBBE NON FUNZIONARE CORRETTAMENTE</u></b>";
                 if(response==0)
-                    document.getElementById("alertSpanFamiglieMateriali").innerHTML="Almeno un gruppo deve essere utilizzato per calcolare il progettato in modo alternativo. <b><u>IL PROGRAMMA POTREBBE NON FUNZIONARE CORRETTAMENTE</u></b>"; 
+                    document.getElementById("alertSpanFamiglieMateriali").innerHTML="Almeno una famiglia deve essere utilizzata per calcolare il progettato in modo alternativo. <b><u>IL PROGRAMMA POTREBBE NON FUNZIONARE CORRETTAMENTE</u></b>"; 
             }
         }
     });
@@ -8394,7 +8349,7 @@ function creaRigaHotRaggruppamentiMateriali(index,table,primaryKey)
                 console.log(response);
             }
             else
-                hotRaggruppamentiMateriali.setDataAtCell(index, 0, response);
+                hot.setDataAtCell(index, 0, response);
         }
     });
 }
@@ -8888,7 +8843,7 @@ async function getHotFormatiLamiere(table,containerId)
         // Event for `keydown` event. Add condition after delay of 200 ms which is counted from time of last pressed key.
         var debounceFn = Handsontable.helper.debounce(function (colIndex, event)
         {
-            var filtersPlugin = hotFormatiLamiere.getPlugin('filters');
+            var filtersPlugin = hot.getPlugin('filters');
 
             filtersPlugin.removeConditions(colIndex);
             filtersPlugin.addCondition(colIndex, 'contains', [event.target.value]);
@@ -8945,7 +8900,7 @@ async function getHotFormatiLamiere(table,containerId)
 
         destroyHots();
 
-        hotFormatiLamiere = new Handsontable
+        hot = new Handsontable
         (
             container,
             {
@@ -8974,7 +8929,7 @@ async function getHotFormatiLamiere(table,containerId)
                         {
                             if(prop!=response.primaryKey)
                             {
-                                var id=hotFormatiLamiere.getDataAtCell(row, 0);
+                                var id=hot.getDataAtCell(row, 0);
                                 aggiornaRigaHot(id,prop,newValue,table,response.primaryKey);
                             }
                         });
@@ -8982,25 +8937,24 @@ async function getHotFormatiLamiere(table,containerId)
                 },
                 afterCreateRow: (index,amount,source) =>
                 {
-                    creaRigaHot(index,table,response.primaryKey,hotFormatiLamiere);
+                    creaRigaHot(index,table,response.primaryKey,hot);
                 },
                 beforeRemoveRow: (index,amount,physicalRows,source)  =>
                 {
                     for (let i = 0; i < physicalRows.length; i++)
                     {
                         const indice = physicalRows[i];
-                        var id=hotFormatiLamiere.getDataAtCell(indice, 0);
+                        var id=hot.getDataAtCell(indice, 0);
                         eliminaRigaHot(id,table,response.primaryKey);
                     }
-                }/*,
+                },
                 afterDropdownMenuShow: (dropdownMenu) =>
                 {
-                    document.getElementsByClassName("htDropdownMenu")[0].style.zIndex="9999";
-                },
-                afterContextMenuShow: (dropdownMenu) =>
-                {
-                    document.getElementsByClassName("htContextMenu")[0].style.zIndex="9999";
-                }*/
+                    document.getElementsByClassName("htUIMultipleSelectSearch")[0].getElementsByTagName("input")[0].addEventListener("click", function()
+                    {
+                        document.getElementsByClassName("htUIClearAll")[0].getElementsByTagName("a")[0].click();
+                    });
+                }
             }
         );
         hideHotDisplayLicenceInfo();
@@ -9184,65 +9138,30 @@ function checkOverflow(el)
 }
 function esportaRichiestaMateriale(id_richiesta)
 {
-    if(hots_dettagli_richieste_materiali[id_richiesta]!==undefined)
+    var inputNomeFile=document.createElement("input");
+    inputNomeFile.setAttribute("type","text");
+    inputNomeFile.setAttribute("value","righe_richiesta_#"+id_richiesta);
+    inputNomeFile.setAttribute("id","fileNameInputSwal");
+    Swal.fire
+    ({
+        type: 'question',
+        title: 'Scegli il nome del file',
+        html : inputNomeFile.outerHTML
+    }).then((result) => 
     {
-        var inputNomeFile=document.createElement("input");
-        inputNomeFile.setAttribute("type","text");
-        inputNomeFile.setAttribute("value","righe_richiesta_#"+id_richiesta);
-        inputNomeFile.setAttribute("id","fileNameInputSwal");
-        Swal.fire
-        ({
-            type: 'question',
-            title: 'Scegli il nome del file',
-            html : inputNomeFile.outerHTML
-        }).then((result) => 
+        if (result.value)
         {
-            if (result.value)
+            swal.close();
+            var filename=document.getElementById("fileNameInputSwal").value;
+            if(filename==null || filename=='')
             {
-                swal.close();
-                var filename=document.getElementById("fileNameInputSwal").value;
-                if(filename==null || filename=='')
-                {
-                    var filename="righe_richiesta_#"+id_richiesta;
-                }
-                try {
-                    document.getElementById("esportaRichiestaMaterialeTable").remove();
-                } catch (error) {}
-            
-                var table=document.createElement("table");
-                table.setAttribute("style","display:none");
-                table.setAttribute("id","esportaRichiestaMaterialeTable");
-            
-                var tr=document.createElement("tr");
-                var colHeaders=hots_dettagli_richieste_materiali[id_richiesta].getColHeader();
-                colHeaders.forEach(header =>
-                {
-                    var th=document.createElement("th");
-                    th.innerHTML=header;
-                    tr.appendChild(th);
-                });
-                table.appendChild(tr);
-            
-                var data=hots_dettagli_richieste_materiali[id_richiesta].getData();
-                data.forEach(row =>
-                {
-                    var tr=document.createElement("tr");
-                    row.forEach(cell =>
-                    {
-                        var td=document.createElement("td");
-                        td.innerHTML=cell;
-                        tr.appendChild(td);
-                    });
-                    table.appendChild(tr);
-                });
-            
-                document.body.appendChild(table);
-                exportTableToExcel("esportaRichiestaMaterialeTable", filename);
+                var filename="righe_richiesta_#"+id_richiesta;
             }
-            else
-                swal.close();
-        });
-    }
+            exportTableToExcel("dettagliRichiestaTable"+id_richiesta, filename);
+        }
+        else
+            swal.close();
+    });
 }
 function hideHotDisplayLicenceInfo()
 {
@@ -9252,129 +9171,9 @@ function hideHotDisplayLicenceInfo()
 }
 function destroyHots(keep)
 {
-    try
-    {
-        if(!keep.inludes("hotFileCalcoloFabbisogno"))
-        {
-            hotFileCalcoloFabbisogno.destroy();
-            document.getElementById("datiImportazioniFabbisogniOuterContainer").remove();
-            var newContainer=document.createElement("div");
-            newContainer.setAttribute("id","datiImportazioniFabbisogniOuterContainer");
-            document.getElementById("containerImportazioneItems").appendChild(newContainer);
-        }
+    try {
+        hot.destroy();
     } catch (error) {}
-    try
-    {
-        if(!keep.inludes("hotMaterialiCalcoloFabbisogno"))
-        {
-            hotMaterialiCalcoloFabbisogno.destroy();
-            document.getElementById("datiImportazioniFabbisogniOuterContainer").remove();
-            var newContainer=document.createElement("div");
-            newContainer.setAttribute("id","datiImportazioniFabbisogniOuterContainer");
-            document.getElementById("containerImportazioneItems").appendChild(newContainer);
-        }
-    } catch (error) {}
-    try
-    {
-        if(!keep.inludes("hotAnagraficaMateriali"))
-        {
-            hotAnagraficaMateriali.destroy();
-            document.getElementById("containerAnagraficheHotItems").remove();
-            var newContainer=document.createElement("div");
-            newContainer.setAttribute("id","containerAnagraficheHotItems");
-            newContainer.setAttribute("class","container-items");
-            document.getElementById("calcoloFabbisognoContainer").appendChild(newContainer);
-        }
-    } catch (error) {}
-    try
-    {
-        if(!keep.inludes("hotStatisticheMaterialiPivot"))
-        {
-            hotStatisticheMaterialiPivot.destroy();
-            document.getElementById("innerContainerStatisticheMaterialiItems").remove();
-            var newContainer=document.createElement("div");
-            newContainer.setAttribute("id","innerContainerStatisticheMaterialiItems");
-            document.getElementById("containerStatisticheMaterialiItems").appendChild(newContainer);
-        }
-    } catch (error) {}
-    try
-    {
-        if(!keep.inludes("hotRiepilogoCommesse"))
-        {
-            hotRiepilogoCommesse.destroy();
-            document.getElementById("containerRiepilogoCommesseItems").remove();
-            var newContainer=document.createElement("div");
-            newContainer.setAttribute("id","containerRiepilogoCommesseItems");
-            newContainer.setAttribute("class","container-items");
-            document.getElementById("calcoloFabbisognoContainer").appendChild(newContainer);
-        }
-    } catch (error) {}
-    try
-    {
-        if(!keep.inludes("hotAnagraficaGruppi"))
-        {
-            hotAnagraficaGruppi.destroy();
-            document.getElementById("containerAnagraficheItems").remove();
-            var newContainer=document.createElement("div");
-            newContainer.setAttribute("id","containerAnagraficheItems");
-            newContainer.setAttribute("class","container-items");
-            document.getElementById("calcoloFabbisognoContainer").appendChild(newContainer);
-        }
-    } catch (error) {}
-    try
-    {
-        if(!keep.inludes("hotRaggruppamentiMateriali"))
-            hotRaggruppamentiMateriali.destroy();
-    } catch (error) {}
-    try
-    {
-        if(!keep.inludes("hotFormatiLamiere"))
-        {
-            hotFormatiLamiere.destroy();
-            document.getElementById("containerFormatiLamiere").remove();
-            var newContainer=document.createElement("div");
-            newContainer.setAttribute("id","containerFormatiLamiere");
-            newContainer.setAttribute("class","container-items");
-            document.getElementById("calcoloFabbisognoContainer").appendChild(newContainer);
-        }
-    } catch (error) {}
-    try
-    {
-        if(!keep.inludes("hots_dettagli_richieste_materiali"))
-        {
-            hots_dettagli_richieste_materiali.forEach(hot_dettagli_richieste_materiali =>
-            {
-                hot_dettagli_richieste_materiali.destroy();
-            });
-        }
-    } catch (error) {}
-
-    //to corret hot bug
-    var hotStuff=document.getElementsByClassName("htMenu");
-    hotStuff.forEach(element =>
-    {
-        element.remove();
-    });
-
-    /*$(".hot-links").remove();
-
-    var script=document.createElement("script");
-    script.setAttribute("src","libs/js/handsontable/handsontable.full.min.js");
-    script.setAttribute("class","hot-links");
-    document.body.appendChild(script);
-
-    var link=document.createElement("link");
-    link.setAttribute("href","libs/js/handsontable/handsontable.full.min.css");
-    link.setAttribute("rel","stylesheet");
-    link.setAttribute("media","screen");
-    link.setAttribute("class","hot-links");
-    document.body.appendChild(script);
-
-    var script=document.createElement("script");
-    script.setAttribute("src","libs/js/handsontable/languages/it-IT.js");
-    script.setAttribute("type","text/javascript");
-    script.setAttribute("class","hot-links");
-    document.body.appendChild(script);*/
 }
 function esportaExcelFormatiLamiere()
 {
@@ -9406,7 +9205,7 @@ function esportaExcelFormatiLamiere()
             table.setAttribute("id","esportaFormatiLamiereTable");
         
             var tr=document.createElement("tr");
-            var colHeaders=hotFormatiLamiere.getColHeader();
+            var colHeaders=hot.getColHeader();
             colHeaders.forEach(header =>
             {
                 var th=document.createElement("th");
@@ -9415,7 +9214,7 @@ function esportaExcelFormatiLamiere()
             });
             table.appendChild(tr);
         
-            var data=hotFormatiLamiere.getData();
+            var data=hot.getData();
             data.forEach(row =>
             {
                 var tr=document.createElement("tr");
@@ -9788,6 +9587,64 @@ function updateStatoRichieste(id_richieste,stato)
                 }).then((result) => 
                 {
                     getElencoRichiesteMateriali();
+                });
+            }
+        }
+    });
+}
+function importaAnagraficheCommessa(callback)
+{
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Importazione anagrafiche in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    var id_commessa=document.getElementById("selectCommessaCalcoloFabbisogno").value;
+
+    $.post("importaAnagraficheCommessa.php",
+    {
+        id_commessa
+    },
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                console.log(response);
+                Swal.fire
+                ({
+                    icon:"error",
+                    title: "Errore. Se il problema persiste contatta l' amministratore.",
+                    showCloseButton:true,
+                    showConfirmButton:false,
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="black";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+                });
+            }
+            else
+            {
+                Swal.fire
+                ({
+                    icon:"success",
+                    title: "Anagrafiche importate",
+                    showCloseButton:true,
+                    showConfirmButton:false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="black";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
+                }).then((result) => 
+                {
+                    if(callback)
+                        getView();
                 });
             }
         }
