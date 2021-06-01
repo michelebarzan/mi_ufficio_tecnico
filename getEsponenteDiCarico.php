@@ -20,7 +20,7 @@
                                                                     (SELECT codice_cabina, SUM(peso) AS peso
                                                                     FROM mi_db_tecnico.dbo.peso_qnt_cabine AS peso_qnt_cabine_1
                                                                     GROUP BY codice_cabina) AS peso_qnt_cabine ON dbo.consistenza_commesse.nr_codice_pareti_kit = peso_qnt_cabine.codice_cabina
-                                    WHERE (dbo.consistenza_commesse.commessa = $commessa)) AS t
+                                    WHERE (dbo.consistenza_commesse.commessa = $commessa) AND (dbo.consistenza_commesse.cabine_sviluppate = 's')) AS t
             GROUP BY [$colonna]";
     }
     else
@@ -36,7 +36,7 @@
                                                 finitura_soffitti_d, finitura_soffitti_e, mq_soffitti, codice_riferimento_pareti__x_gea__non_inserire_dati, letto_pullman_dx, letto_pullman_sx, letto_pullman_rib_dx, letto_pullman_rib_sx, letto_parete_dx, 
                                                 letto_parete_sx, letto_singolo, tot_pullman, double_sofa_rrevolving_popullout, rinforzo_tv_verticale, arredo_cabine_sviluppato, codice_arredo, codcabina_gestionale
                         FROM dbo.consistenza_commesse AS consistenza_commesse_1
-                        WHERE (commessa = $commessa)) AS consistenza_commesse INNER JOIN
+                        WHERE (commessa = $commessa) AND (cabine_sviluppate = 's')) AS consistenza_commesse INNER JOIN
                         (SELECT codice_cabina, SUM(peso) AS peso
                             FROM mi_db_tecnico.dbo.peso_qnt_cabine AS peso_qnt_cabine_1
                             GROUP BY codice_cabina) AS peso_qnt_cabine ON consistenza_commesse.nr_codice_pareti_kit = peso_qnt_cabine.codice_cabina ";

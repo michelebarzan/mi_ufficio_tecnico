@@ -1295,9 +1295,11 @@ html
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 30px;
 	transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 	outline: none;
+	color:#ddd;
+	margin:0px;
+	padding:0px;
 }
 .popup-nuova-richiesta-bottom-button
 {
@@ -1330,6 +1332,78 @@ html
 .popup-nuova-richiesta-bottom-button i
 {
 	margin-left:10px
+}
+#popupNuovaRichiestaContainerTabellaTotali
+{
+	display:flex;
+	flex-direction:row;
+	align-items:center;
+	justify-content:flex-start;
+	margin-left:auto;
+	overflow:hidden;
+	width:400px;
+	max-width:400px;
+	max-height:105px;
+	min-width:400px;
+}
+.table-totali-materiale-popup-nuova-richiesta
+{
+    width:100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+	width:400px;
+	max-width:400px;
+	max-height:105px;
+	min-width:400px;
+	display: block;
+	border:1px solid gray;
+}
+.table-totali-materiale-popup-nuova-richiesta thead
+{
+    height: 25px;
+    padding-right: 17px;
+	display: block;
+	background-color: #4d4d4d;
+}
+.table-totali-materiale-popup-nuova-richiesta th
+{
+	font-family: 'Montserrat',sans-serif;
+	font-size:12px;
+	color:#ddd;
+	text-align: left;
+	font-weight: normal;
+	box-sizing: border-box;
+	height: 25px;
+	padding-left:5px;
+	padding-right:5px;
+}
+.table-totali-materiale-popup-nuova-richiesta th b
+{
+	margin-left: 5px;
+	color:#4C91CB;
+}
+.table-totali-materiale-popup-nuova-richiesta tbody 
+{
+   overflow-y: scroll;
+   display: block;
+   height: calc(100% - 25px);
+   max-height: 80px;
+}
+.table-totali-materiale-popup-nuova-richiesta tbody tr
+{
+	border-top:1px solid gray;
+	box-sizing: border-box;
+}
+.table-totali-materiale-popup-nuova-richiesta td
+{
+	padding:5px;
+	font-family: 'Montserrat',sans-serif;
+	font-size:12px;
+	color:#ddd;
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 /*-----------------------------------------------------------*/
 #containerStatisticheMaterialiItems
@@ -1782,10 +1856,6 @@ html
 	width: 100%;
 	border-top: 2px solid black;
 	border-bottom: 2px solid black;
-}
-#tableStatisticheMateriali tr
-{
-	
 }
 #tableStatisticheMateriali td
 {
