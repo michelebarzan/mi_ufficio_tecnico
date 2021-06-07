@@ -6,6 +6,8 @@
     $id_commessa=$_REQUEST["id_commessa"];
     $id_gruppo=$_REQUEST["id_gruppo"];
     $id_materiale=$_REQUEST["id_materiale"];
+    $tableTotaliMaterialePopupNuovaRichiestaRichiesto0=$_REQUEST["tableTotaliMaterialePopupNuovaRichiestaRichiesto0"];
+    $tableTotaliMaterialePopupNuovaRichiestaCalcolato0=$_REQUEST["tableTotaliMaterialePopupNuovaRichiestaCalcolato0"];
 
     $data=[];
 

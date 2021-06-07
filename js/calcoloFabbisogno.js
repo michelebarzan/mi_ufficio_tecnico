@@ -19,6 +19,8 @@ var richiesteSelezionateEsportaRichieste=[];
 var esportaRichieste=false;
 var selectRaggruppamentoPopupNuovaRichiesta;
 var popupNuovaRichiestaMaterialiUnsavedRows=[];
+var tableTotaliMaterialePopupNuovaRichiestaRichiesto0=false;
+var tableTotaliMaterialePopupNuovaRichiestaCalcolato0=false;
 
 window.addEventListener("load", async function(event)
 {
@@ -1068,42 +1070,6 @@ function aggiornaDettagliRichiestaMateriale(valore,id_dettaglio,colonna,input)
         }
     });
 }
-/*function fixTables()
-{
-    try {
-        var tables=document.getElementsByClassName("dettagli-richiesta-table");
-    for (let index = 0; index < tables.length; index++)
-    {
-        const table = tables[index];
-        try
-        {
-            var id_richiesta=table.getAttribute("id_richiesta");
-
-            var colsNum=document.getElementById("dettagliRichiestaTable"+id_richiesta).getElementsByTagName("th").length-1;
-            var tableWidth=document.getElementById("dettagliRichiestaTable"+id_richiesta).offsetWidth-35;
-
-            var tableColWidth=tableWidth/colsNum;
-            
-            var ths=document.getElementById("dettagliRichiestaTable"+id_richiesta).getElementsByTagName("th");
-            for (let index = 0; index < ths.length; index++)
-            {
-                const th = ths[index];
-                if(index<7)
-                    th.style.width=tableColWidth+"px";
-            }
-            var tds=document.getElementById("dettagliRichiestaTable"+id_richiesta).getElementsByTagName("td");
-            for (let index = 0; index < tds.length; index++)
-            {
-                const td = tds[index];
-                if(index<7)
-                    td.style.width=tableColWidth+"px";
-            }
-        } catch (error) {console.log(error)}
-    }
-    } catch (error) {
-        
-    }
-}*/
 function aggiornaGruppoRichiestaMateriale(gruppo,id_richiesta)
 {
     $.post("aggiornaGruppoRichiestaMaterialeCalcoloFabbisogno.php",
@@ -2961,7 +2927,7 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
                 tr.appendChild(th);
 
                 var th=document.createElement("th");
-                th.innerHTML="Foglio largo";
+                th.innerHTML="Foglio stretto";
                 tr.appendChild(th);
 
                 var th=document.createElement("th");
@@ -2969,7 +2935,7 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
                 tr.appendChild(th);
 
                 var th=document.createElement("th");
-                th.innerHTML="Foglio stretto";
+                th.innerHTML="Foglio largo";
                 tr.appendChild(th);
 
                 var th=document.createElement("th");
@@ -3009,24 +2975,6 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
                     var td=document.createElement("td");
                     if(riga_dettagli_richieste.calcolo_progettato_alternativo=="true")
                     {
-                        if(riga_dettagli_richieste.id_formato_1==null)
-                            td.setAttribute("id_formato_1","");
-                        else
-                        {
-                            td.setAttribute("id_formato_1",riga_dettagli_richieste.id_formato_1);
-                                td.innerHTML=riga_dettagli_richieste.codice_1+" ("+riga_dettagli_richieste.altezza_1+"x"+riga_dettagli_richieste.larghezza_1+")";
-                        }
-                    }
-                    tr.appendChild(td);
-
-                    var td=document.createElement("td");
-                    if(riga_dettagli_richieste.calcolo_progettato_alternativo=="true")
-                        td.innerHTML=riga_dettagli_richieste.qnt_formato_1;
-                    tr.appendChild(td);
-
-                    var td=document.createElement("td");
-                    if(riga_dettagli_richieste.calcolo_progettato_alternativo=="true")
-                    {
                         if(riga_dettagli_richieste.id_formato_2==null)
                             td.setAttribute("id_formato_2","");
                         else
@@ -3040,6 +2988,24 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
                     var td=document.createElement("td");
                     if(riga_dettagli_richieste.calcolo_progettato_alternativo=="true")
                         td.innerHTML=riga_dettagli_richieste.qnt_formato_2;
+                    tr.appendChild(td);
+
+                    var td=document.createElement("td");
+                    if(riga_dettagli_richieste.calcolo_progettato_alternativo=="true")
+                    {
+                        if(riga_dettagli_richieste.id_formato_1==null)
+                            td.setAttribute("id_formato_1","");
+                        else
+                        {
+                            td.setAttribute("id_formato_1",riga_dettagli_richieste.id_formato_1);
+                                td.innerHTML=riga_dettagli_richieste.codice_1+" ("+riga_dettagli_richieste.altezza_1+"x"+riga_dettagli_richieste.larghezza_1+")";
+                        }
+                    }
+                    tr.appendChild(td);
+
+                    var td=document.createElement("td");
+                    if(riga_dettagli_richieste.calcolo_progettato_alternativo=="true")
+                        td.innerHTML=riga_dettagli_richieste.qnt_formato_1;
                     tr.appendChild(td);
 
                     var td=document.createElement("td");
@@ -3254,12 +3220,12 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
         var span=document.createElement("span");
         span.setAttribute("class","popup-nuova-richiesta-span");
         span.setAttribute("style","margin-left: auto;color:#ddd;text-align:left;height:30px;line-height:30px");
-        span.innerHTML="Foglio largo: ";
+        span.innerHTML="Foglio stretto: ";
         row.appendChild(span);
 
         var select=document.createElement("select");
         select.setAttribute("class","dark-popup-select");
-        select.setAttribute("id","select1xPopupNuovaRichiesta");
+        select.setAttribute("id","select2xPopupNuovaRichiesta");
         select.setAttribute("style","width:175px;margin-left:5px");
         select.setAttribute("onchange","if(this.value=='aggiungi'){Swal.close();getMascheraFormatiLamiere()}else{calcolaFormatiLamiera()}");
 
@@ -3273,7 +3239,7 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
 
         var input=document.createElement("input");
         input.setAttribute("type","number");
-        input.setAttribute("id","popupNuovaRichiestaFogli1");
+        input.setAttribute("id","popupNuovaRichiestaFogli2");
         input.setAttribute("class","dark-popup-input");
         input.setAttribute("style","width: 60px;margin-left:5px;");
         row.appendChild(input);
@@ -3303,12 +3269,12 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
         var span=document.createElement("span");
         span.setAttribute("class","popup-nuova-richiesta-span");
         span.setAttribute("style","margin-left: auto;color:#ddd;text-align:left;height:30px;line-height:30px");
-        span.innerHTML="Foglio stretto: ";
+        span.innerHTML="Foglio largo: ";
         row.appendChild(span);
 
         var select=document.createElement("select");
         select.setAttribute("class","dark-popup-select");
-        select.setAttribute("id","select2xPopupNuovaRichiesta");
+        select.setAttribute("id","select1xPopupNuovaRichiesta");
         select.setAttribute("style","width:175px;margin-left:5px");
         select.setAttribute("onchange","if(this.value=='aggiungi'){Swal.close();getMascheraFormatiLamiere()}else{calcolaFormatiLamiera()}");
 
@@ -3322,7 +3288,7 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
 
         var input=document.createElement("input");
         input.setAttribute("type","number");
-        input.setAttribute("id","popupNuovaRichiestaFogli2");
+        input.setAttribute("id","popupNuovaRichiestaFogli1");
         input.setAttribute("class","dark-popup-input");
         input.setAttribute("style","width: 60px;margin-left:5px;");
         row.appendChild(input);
@@ -3716,7 +3682,7 @@ async function aggiungiMaterialeRichiesta(icon,id_richiesta)
             tr.appendChild(th);
 
             var th=document.createElement("th");
-            th.innerHTML="Foglio largo";
+            th.innerHTML="Foglio stretto";
             tr.appendChild(th);
 
             var th=document.createElement("th");
@@ -3724,7 +3690,7 @@ async function aggiungiMaterialeRichiesta(icon,id_richiesta)
             tr.appendChild(th);
 
             var th=document.createElement("th");
-            th.innerHTML="Foglio stretto";
+            th.innerHTML="Foglio largo";
             tr.appendChild(th);
 
             var th=document.createElement("th");
@@ -3768,24 +3734,6 @@ async function aggiungiMaterialeRichiesta(icon,id_richiesta)
         var td=document.createElement("td");
         if(materialeObj.calcolo_progettato_alternativo=="true")
         {
-            if(formato_1Obj==null)
-                td.setAttribute("id_formato_1","");
-            else
-            {
-                td.setAttribute("id_formato_1",id_formato_1);
-                td.innerHTML=codice_1+" ("+altezza_1+"x"+larghezza_1+")";
-            }
-        }
-        tr.appendChild(td);
-
-        var td=document.createElement("td");
-        if(materialeObj.calcolo_progettato_alternativo=="true")
-            td.innerHTML=fogli1;
-        tr.appendChild(td);
-
-        var td=document.createElement("td");
-        if(materialeObj.calcolo_progettato_alternativo=="true")
-        {
             if(formato_2Obj==null)
                 td.setAttribute("id_formato_2","");
             else
@@ -3799,6 +3747,24 @@ async function aggiungiMaterialeRichiesta(icon,id_richiesta)
         var td=document.createElement("td");
         if(materialeObj.calcolo_progettato_alternativo=="true")
             td.innerHTML=fogli2;
+        tr.appendChild(td);
+
+        var td=document.createElement("td");
+        if(materialeObj.calcolo_progettato_alternativo=="true")
+        {
+            if(formato_1Obj==null)
+                td.setAttribute("id_formato_1","");
+            else
+            {
+                td.setAttribute("id_formato_1",id_formato_1);
+                td.innerHTML=codice_1+" ("+altezza_1+"x"+larghezza_1+")";
+            }
+        }
+        tr.appendChild(td);
+
+        var td=document.createElement("td");
+        if(materialeObj.calcolo_progettato_alternativo=="true")
+            td.innerHTML=fogli1;
         tr.appendChild(td);
 		
 		if(id_formato_1=="" || id_formato_1==null)
@@ -9152,9 +9118,8 @@ async function getTotaliMaterialePopupNuovaRichiesta()
     var materiali=await getMateriali();
 
     var materialeObj=getFirstObjByPropValue(materiali,"id_materiale",id_materiale);
-    console.log(materialeObj);
 
-    $.get("getTotaliMaterialePopupNuovaRichiesta.php",{id_gruppo,id_materiale,id_commessa},
+    $.get("getTotaliMaterialePopupNuovaRichiesta.php",{id_gruppo,id_materiale,id_commessa,tableTotaliMaterialePopupNuovaRichiestaRichiesto0,tableTotaliMaterialePopupNuovaRichiestaCalcolato0},
     function(response, status)
     {
         if(status=="success")
@@ -9187,14 +9152,36 @@ async function getTotaliMaterialePopupNuovaRichiesta()
                 if(data.length>0 && materialeObj.calcolo_progettato_alternativo=="true")
                 {
                     var th=document.createElement("th");
-                    th.innerHTML="Altezza";
+                    var div=document.createElement("div");
+                    var span=document.createElement("span");
+                    span.innerHTML="Altezza";
+                    div.appendChild(span);
+                    th.appendChild(div);
                     tr.appendChild(th);
                 }
+
                 var th=document.createElement("th");
-                th.innerHTML="Calcolato <b>"+totaleCalcolato+"</b>";
+                var div=document.createElement("div");
+                var span=document.createElement("span");
+                span.innerHTML="Calcolato <b>"+totaleCalcolato.toFixed(2)+"</b>";
+                div.appendChild(span);
+                /*var button=document.createElement("button");
+                button.setAttribute("onclick","tableTotaliMaterialePopupNuovaRichiestaCalcolato0=!tableTotaliMaterialePopupNuovaRichiestaCalcolato0;getTotaliMaterialePopupNuovaRichiesta()");
+                button.innerHTML="<i class='fad fa-filter'></i>";
+                div.appendChild(button);*/
+                th.appendChild(div);
                 tr.appendChild(th);
+
                 var th=document.createElement("th");
-                th.innerHTML="Richiesto <b>"+totaleRichiesto+"</b>";
+                var div=document.createElement("div");
+                var span=document.createElement("span");
+                span.innerHTML="Richiesto <b>"+totaleRichiesto.toFixed(2)+"</b>";
+                div.appendChild(span);
+                /*var button=document.createElement("button");
+                button.setAttribute("onclick","tableTotaliMaterialePopupNuovaRichiestaRichiesto0=!tableTotaliMaterialePopupNuovaRichiestaRichiesto0;getTotaliMaterialePopupNuovaRichiesta()");
+                button.innerHTML="<i class='fad fa-filter'></i>";
+                div.appendChild(button);*/
+                th.appendChild(div);
                 tr.appendChild(th);
 
                 thead.appendChild(tr);
@@ -9215,10 +9202,10 @@ async function getTotaliMaterialePopupNuovaRichiesta()
                             tr.appendChild(td);
                         }
                         var td=document.createElement("td");
-                        td.innerHTML=row.calcolato;
+                        td.innerHTML=row.calcolato.toFixed(2);
                         tr.appendChild(td);
                         var td=document.createElement("td");
-                        td.innerHTML=row.richiesto;
+                        td.innerHTML=row.richiesto.toFixed(2);
                         tr.appendChild(td);
 
                         tbody.appendChild(tr);
@@ -9669,12 +9656,20 @@ async function confermaEsportaRichieste()
         var colHeaders=[];
         var data=[];
 
+        colHeaders.push("id_richiesta");
+        colHeaders.push("commessa");
+
         for (let index = 0; index < richiesteSelezionateEsportaRichieste.length; index++)
         {
             const id_richiestaLcl = richiesteSelezionateEsportaRichieste[index];
             var response=await getHotDettagliRichiesteMaterialiViewData("dettagli_richieste_materiali_view",id_richiestaLcl);
-            if(colHeaders.length==0)
-                colHeaders=response.colHeaders;
+            if(index==0)
+            {
+                response.colHeaders.forEach(header =>
+                {
+                    colHeaders.push(header);
+                });
+            }
             response.data.forEach(row =>
             {
                 row["id_richiesta"]=id_richiestaLcl;
@@ -9682,8 +9677,6 @@ async function confermaEsportaRichieste()
                 data.push(row);
             });
         }
-        colHeaders.push("id_richiesta");
-        colHeaders.push("commessa");
         
         var table=document.createElement("table");
         table.setAttribute("id","esportaRichiesteHiddenTable");

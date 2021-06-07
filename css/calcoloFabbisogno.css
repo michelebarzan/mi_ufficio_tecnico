@@ -1367,17 +1367,40 @@ html
 }
 .table-totali-materiale-popup-nuova-richiesta th
 {
-	font-family: 'Montserrat',sans-serif;
-	font-size:12px;
-	color:#ddd;
-	text-align: left;
-	font-weight: normal;
 	box-sizing: border-box;
 	height: 25px;
 	padding-left:5px;
 	padding-right:5px;
 }
-.table-totali-materiale-popup-nuova-richiesta th b
+.table-totali-materiale-popup-nuova-richiesta th div
+{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+}
+.table-totali-materiale-popup-nuova-richiesta th div span
+{
+	font-family: 'Montserrat',sans-serif;
+	font-size:12px;
+	color:#ddd;
+	text-align: left;
+	font-weight: normal;
+}
+.table-totali-materiale-popup-nuova-richiesta th div button
+{
+	border:none;
+	background-color: transparent;
+	cursor: pointer;
+	margin:0px;
+	padding:0px;
+	margin-left: auto;
+	outline: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.table-totali-materiale-popup-nuova-richiesta th div span b
 {
 	margin-left: 5px;
 	color:#4C91CB;
