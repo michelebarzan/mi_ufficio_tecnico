@@ -33,8 +33,8 @@ function getPopupAlertCommessaNumeroCabina()
         showCancelButton:false,
         onOpen : function()
                 {
-                    document.getElementsByClassName("swal2-popup")[0].style.height="400px";
-                    document.getElementsByClassName("swal2-content")[0].style.height="400px";
+                    document.getElementsByClassName("swal2-popup")[0].style.height="460px";
+                    document.getElementsByClassName("swal2-content")[0].style.height="460px";
                     document.getElementsByClassName("swal2-title")[0].style.marginBottom="15px";
                     document.getElementsByClassName("swal2-title")[0].style.width="100%";
                     document.getElementsByClassName("swal2-title")[0].style.textAlign="left";
@@ -109,6 +109,7 @@ function getPopupAlertCommessaNumeroCabina()
 async function getHotCavallottiSquadrette()
 {
     document.getElementById("buttonPopupAlertCommessaNumeroCabina").style.display="none";
+    dataHotPopupAlertCommessaNumeroCabina=[];
 
     var container = document.getElementById('cavallottiSquadretteGeaContainer');
     container.innerHTML="";
