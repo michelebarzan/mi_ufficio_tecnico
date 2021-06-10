@@ -1,5 +1,7 @@
 var commesse;
 var hot;
+var hot2;
+var dataHotPopupAlertCommessaNumeroCabina=[];
 
 window.addEventListener("load", async function(event)
 {
@@ -14,9 +16,100 @@ window.addEventListener("load", async function(event)
     });
     getHotCavallottiSquadrette();
 });
+function getPopupAlertCommessaNumeroCabina()
+{
+    var outerContainer=document.createElement("div");
+    outerContainer.setAttribute("id","popupAlertCommessaNumeroCabinaContainer");
 
+    Swal.fire
+    ({
+        title:"Numero velette eccessivo (>10)",
+        background:"#f1f1f1",
+        html:outerContainer.outerHTML,
+        allowOutsideClick:false,
+        showCloseButton:true,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function()
+                {
+                    document.getElementsByClassName("swal2-popup")[0].style.height="400px";
+                    document.getElementsByClassName("swal2-content")[0].style.height="400px";
+                    document.getElementsByClassName("swal2-title")[0].style.marginBottom="15px";
+                    document.getElementsByClassName("swal2-title")[0].style.width="100%";
+                    document.getElementsByClassName("swal2-title")[0].style.textAlign="left";
+
+                    setTimeout(() =>
+                    {
+                        try {hot2.destroy();} catch (error) {}
+
+                        console.log(dataHotPopupAlertCommessaNumeroCabina);
+
+                        var container = document.getElementById('popupAlertCommessaNumeroCabinaContainer');
+
+                        var columns=[];
+                        var colHeaders=["commessa_numero_cabina","n"];
+                        colHeaders.forEach(title =>
+                        {
+                            var column=
+                            {
+                                data:title,
+                                readOnly: true
+                            }
+                            columns.push(column);
+                        });
+                        
+                        var height=container.offsetHeight;
+                        
+                        hot2 = new Handsontable
+                        (
+                            container,
+                            {
+                                data: dataHotPopupAlertCommessaNumeroCabina,
+                                rowHeaders: true,
+                                manualColumnResize: true,
+                                colHeaders,
+                                allowInsertRow: false,
+                                allowRemoveRow: false,
+                                allowInsertColumn: false,
+                                allowRemoveColumn: false,
+                                filters: false,
+                                dropdownMenu: false,
+                                headerTooltips: true,
+                                language: 'it-IT',
+                                contextMenu: false,
+                                width:"100%",
+                                height
+                            }
+                        );
+                        try {
+                            document.getElementById("hot-display-license-info").remove();
+                        } catch (error) {}
+                        var tables=document.getElementsByClassName("htCore");
+                        for (let index = 0; index < tables.length; index++)
+                        {
+                            const element = tables[index];
+                            element.style.fontSize="12px";
+                        }
+
+                        hot2.render();
+                         
+                    }, 500);
+                }
+    }).then((result) => 
+    {
+        var tables=document.getElementsByClassName("htCore");
+        for (let index = 0; index < tables.length; index++)
+        {
+            const element = tables[index];
+            element.style.fontSize="";
+        }
+    });
+}
 async function getHotCavallottiSquadrette()
 {
+    document.getElementById("buttonPopupAlertCommessaNumeroCabina").style.display="none";
+
     var container = document.getElementById('cavallottiSquadretteGeaContainer');
     container.innerHTML="";
 
@@ -35,6 +128,15 @@ async function getHotCavallottiSquadrette()
     });
 
     var response=await getHotDataCavallottiSquadrette();
+
+    response.commessa_numero_cabina_n_array.forEach(commessa_numero_cabina_n_obj =>
+    {
+        if(commessa_numero_cabina_n_obj.n>10)
+            dataHotPopupAlertCommessaNumeroCabina.push(commessa_numero_cabina_n_obj);
+    });
+
+    if(dataHotPopupAlertCommessaNumeroCabina.length>0)
+        document.getElementById("buttonPopupAlertCommessaNumeroCabina").style.display="";
 
     Swal.close();
 

@@ -32,6 +32,10 @@
 				<span>Esporta</span>
 				<i class="fad fa-file-excel" style="margin-left:5px"></i>
 			</button>
+			<button class="rcb-button-text-icon" style="display:none" id="buttonPopupAlertCommessaNumeroCabina" onclick="getPopupAlertCommessaNumeroCabina()">
+				<span>Numero velette eccessivo</span>
+				<i class="fad fa-exclamation-triangle" style="margin-left:5px"></i>
+			</button>
 		</div>
 		<div id="cavallottiSquadretteGeaContainer"></div>
 		<div id="footer">
