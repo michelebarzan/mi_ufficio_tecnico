@@ -448,35 +448,6 @@ async function inserisciNuovaAttivita()
         }
     }
 }
-function checkDuplicateValue(value,column,table,database)
-{
-    return new Promise(function (resolve, reject) 
-    {
-        $.get("checkDuplicateValue.php",{value,column,table,database},
-        function(response, status)
-        {
-            if(status=="success")
-            {
-                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
-                {
-                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                    console.log(response);
-                    resolve(true);
-                }
-                else
-                {
-                    try {
-                        resolve(JSON.parse(response));
-                    } catch (error) {
-                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                        console.log(response);
-                        resolve(true);
-                    }
-                }
-            }
-        });
-    });
-}
 function getMacroAttivita()
 {
     return new Promise(function (resolve, reject) 
@@ -691,7 +662,7 @@ function getPopupMacroAttivita()
 {
     var outerContainer=document.createElement("div");
     outerContainer.setAttribute("id","containerPopupMacroAttivita");
-    outerContainer.setAttribute("style","width:calc(100% - 40px);height:550px;margin-left:20px;margin-right:20px;margin-top:15px");
+    outerContainer.setAttribute("style","max-width:calc(100% - 40px);height:550px;margin-left:20px;margin-right:20px;margin-top:15px");
 
     outerContainer.innerHTML="<i class='fad fa-spinner-third fa-spin'></i>";
 
@@ -722,7 +693,9 @@ function getPopupMacroAttivita()
                     document.getElementsByClassName("swal2-content")[0].style.fontSize="initial";
                     document.getElementsByClassName("swal2-header")[0].style.width="calc(100% - 50px)";
 
-                    getHotMacroAttivita();
+                    setTimeout(() => {
+                        getHotMacroAttivita();
+                    }, 100);
                 }
     }).then((result) => 
     {
@@ -742,7 +715,10 @@ async function getHotMacroAttivita()
 
     if(response.data.length>0)
     {
-        destroyHots(["hot"]);
+        try
+        {
+            hot.destroy();
+        } catch (error) {}
         hot = new Handsontable
         (
             container,
@@ -768,8 +744,11 @@ async function getHotMacroAttivita()
                         {
                             if(prop!=response.primaryKey)
                             {
-                                var id=hot.getDataAtCell(row, 0);
-                                aggiornaRigaHotMacroAttivita(id,prop,newValue,table,response.primaryKey);
+                                if(oldValue!=newValue)
+                                {
+                                    var id=hot.getDataAtCell(row, 0);
+                                    aggiornaRigaHotMacroAttivita(id,prop,newValue,table,response.primaryKey);
+                                }
                             }
                         });
                     }
@@ -797,27 +776,101 @@ async function getHotMacroAttivita()
                 }
             }
         );
-        hideHotDisplayLicenceInfo();
+        
+        $(".handsontable .changeType").css
+        ({
+            "background": "#eee",
+            "border-radius": "0",
+            "border": "none",
+            "color": "#404040",
+            "font-size": "14px",
+            "line-height": "normal",
+            "padding": "0px",
+            "margin": "0px",
+            "float": "right"
+        });
     }
 }
-function aggiornaRigaHotMacroAttivita(id,colonna,valore,table,primaryKey)
+async function aggiornaRigaHotMacroAttivita(id,colonna,valore,table,primaryKey)
 {
-    $.get("aggiornaRigaHotMacroAttivita.php",{id,colonna,valore,table,primaryKey},
-    function(response, status)
+    var update=false;
+    if(colonna=="nome")
     {
-        if(status=="success")
+        if(valore!=="")
         {
-            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            var duplicato=await checkDuplicateValue(valore,"nome","macro_attivita","mi_pianificazione");
+            if(duplicato)
             {
-                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
-                console.log(response);
+                Swal.fire
+                ({
+                    icon:"error",
+                    title: 'Esiste gia un macro attività chiamata "'+valore+'"',
+                    background:"#404040",
+                    showCloseButton:true,
+                    showConfirmButton:false,
+                    allowOutsideClick:true,
+                    allowEscapeKey:true,
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="#ddd";document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                }).then((result) => 
+                {
+                    getPopupMacroAttivita();
+                });
+            }
+            else
+                update=true;
+        }
+    }
+    else
+    {
+        if(colonna=="durata")
+        {
+            if (valore === parseInt(valore, 10))
+                update=true;
+            else
+            {
+                Swal.fire
+                ({
+                    icon:"error",
+                    title: 'Il campo durata deve contenere un valore numerico intero',
+                    background:"#404040",
+                    showCloseButton:true,
+                    showConfirmButton:false,
+                    allowOutsideClick:true,
+                    allowEscapeKey:true,
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="#ddd";document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                }).then((result) => 
+                {
+                    getPopupMacroAttivita();
+                });
             }
         }
-    });
+        else
+            update=true;
+    }
+    if(update)
+    {
+        $.get("aggiornaRigaHotPianificazioneCommesse.php",{id,colonna,valore,table,primaryKey},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                }
+                else
+                {
+                    if(response.toLowerCase().indexOf("refresh")>-1)
+                        getHotGestioneAttivita();
+                }
+            }
+        });
+    }
 }
 function creaRigaHotMacroAttivita(index,table,primaryKey)
 {
-    $.get("creaRigaHotMacroAttivita.php",{table,primaryKey},
+    $.get("creaRigaHotPianificazioneCommesse.php",{table,primaryKey},
     function(response, status)
     {
         if(status=="success")
@@ -834,14 +887,28 @@ function creaRigaHotMacroAttivita(index,table,primaryKey)
 }
 function eliminaRigaHotMacroAttivita(id,table,primaryKey)
 {
-    $.get("eliminaRigaHotMacroAttivita.php",{id,table,primaryKey},
+    $.get("eliminaRigaHotPianificazioneCommesse.php",{id,table,primaryKey},
     function(response, status)
     {
         if(status=="success")
         {
             if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
             {
-                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                Swal.fire
+                ({
+                    icon:"error",
+                    title: "Impossibile eliminare la macro attività",
+                    text:"Controlla che non sia già stata usata",
+                    background:"#404040",
+                    showCloseButton:true,
+                    showConfirmButton:false,
+                    allowOutsideClick:true,
+                    allowEscapeKey:true,
+                    onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="#ddd";document.getElementsByClassName("swal2-content")[0].style.color="#ddd";document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                }).then((result) => 
+                {
+                    getPopupMacroAttivita();
+                });
                 console.log(response);
             }
         }
@@ -851,7 +918,7 @@ function getHotMacroAttivitaData(table)
 {
     return new Promise(function (resolve, reject) 
     {
-        $.get("getHotMacroAttivitaData.php",{table},
+        $.get("getHotMacroAttivitaDataPianificazioneCommesse.php",{table},
         function(response, status)
         {
             if(status=="success")

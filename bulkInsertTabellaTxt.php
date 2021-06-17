@@ -31,6 +31,8 @@
     $righeNonInserite=0;
 
     $stmts=[];
+	
+	exec("inserisci_password.bat");
 
     foreach($databases as $txt_database)
     {

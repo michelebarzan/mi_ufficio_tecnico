@@ -3,28 +3,15 @@
     $database="mi_pianificazione";
     include "connessioneDb.php";
 
+    $table=$_REQUEST["table"];
+    $primaryKey="id_macro_attivita";
+
     $columns=[];
     $colHeaders=[];
 
-    $macro_attivita=[];
-    $q3="SELECT * FROM macro_attivita";
-    $r3=sqlsrv_query($conn,$q3);
-    if($r3==FALSE)
-    {
-        die("error".$q3);
-    }
-    else
-    {
-        while($row3=sqlsrv_fetch_array($r3))
-        {
-            array_push($macro_attivita,$row3["nome"]);
-        }
-        array_push($macro_attivita,"Nessuna");
-    }
-
     $q2="SELECT COLUMN_NAME, CASE WHEN DATA_TYPE = 'varchar' THEN 'text' ELSE 'numeric' END AS type
         FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE (TABLE_NAME = N'anagrafica_attivita_view')";
+        WHERE (TABLE_NAME = N'$table')";
     $r2=sqlsrv_query($conn,$q2);
     if($r2==FALSE)
     {
@@ -40,12 +27,7 @@
 
             switch ($row2["COLUMN_NAME"])
             {
-                case 'macro_attivita':
-                    $column["type"]="dropdown";
-                    $column["source"]=$macro_attivita;
-                    $column["readOnly"]=false;
-                break;
-                case 'id_attivita':
+                case $primaryKey:
                     $column["readOnly"]=true;
                     $column["type"]=$row2["type"];
                 break;
@@ -61,7 +43,7 @@
 
     $data=[];
 
-    $q="SELECT * FROM anagrafica_attivita_view ORDER BY nome";
+    $q="SELECT * FROM $table ORDER BY nome";
     $r=sqlsrv_query($conn,$q);
     if($r==FALSE)
     {
@@ -74,7 +56,7 @@
             $rowObj=[];
             foreach ($colHeaders as $column)
             {
-                if($column=="nome" || $column=="descrizione" || $column=="macro_attivita")
+                if($column=="nome" || $column=="descrizione")
                     $rowObj[$column]=utf8_encode($row[$column]);
                 else
                     $rowObj[$column]=$row[$column];
@@ -83,6 +65,7 @@
         }
     }
 
+    $arrayResponse["primaryKey"]=$primaryKey;
     $arrayResponse["columns"]=$columns;
     $arrayResponse["colHeaders"]=$colHeaders;
     $arrayResponse["data"]=$data;

@@ -6,6 +6,7 @@
 ?>
 <html>
 	<head>
+		<link rel="stylesheet" href="css/inPageNavBar.css" />
 		<link href="css/fonts.css" rel="stylesheet">
 		<title><?php echo $pageName; ?></title>
 		<link rel="stylesheet" href="css/struttura.css" />
@@ -23,25 +24,22 @@
 	</head>
 	<body>
 		<?php include('struttura.php'); ?>
-		<div class="reusable-control-bar" id="actionBarCloudFoto">
-			<div class="rcb-select-container">
-				<span>Commessa: </span>
-				<select style="text-decoration:none" id="selectCommessaConsistenzaCommesse" onchange="getTabellaConsistenzaCommessa(this.value)"></select>
+		<div class="in-page-nav-bar">
+			<div class="in-page-nav-bar-row">
 			</div>
-            <button class="rcb-button-text-icon" onclick="getPopupNuovaCommessa()">
-				<span>Nuova Commessa</span>
-				<i class="fad fa-layer-plus" style="margin-left:5px"></i>
-			</button>
-			<button class="rcb-button-text-icon" onclick="getPopupModificaCommessa()">
-				<span>Modifica Commessa</span>
-				<i class="fad fa-layer-plus" style="margin-left:5px"></i>
-			</button>
-			<button class="rcb-button-text-icon" onclick="getPopupCronologia()">
-				<span>Cronologia</span>
-				<i class="fad fa-history" style="margin-left:5px"></i>
-			</button>
+			<div class="in-page-nav-bar-row">
+				<button class="in-page-nav-bar-button" id="btn_collegamento_tabelle" onclick="getMascheraCollegamentoTabelle(this)">
+					<span>Collegamento tabelle</span>
+                    <i class="fa-duotone fa-table"></i>
+                </button>
+				<button class="in-page-nav-bar-button" id="btn_gestione_tronconi" onclick="getMascheraGestioneTronconi(this)">
+					<span>Gestione tronconi</span>
+                    <i class="fa-duotone fa-split"></i>
+                </button>
+			</div>
 		</div>
-		<div id="consistenzaCommesseContainer"></div>
+		<div class="reusable-control-bar" id="consistenzaCommesseActionBar" style="display:none"></div>
+		<div id="consistenzaCommesseContainer" style="display:none"></div>
 		<div id="footer">
 			<b>Marine&nbspInteriors&nbspCabins&nbspS.p.A.</b>&nbsp&nbsp|&nbsp&nbspVia&nbspSegaluzza&nbsp33170&nbspPordenone&nbsp&nbsp|&nbsp&nbspPhone:&nbsp(+39)&nbsp0434612811&nbsp|&nbspPowered&nbspby&nbsp<a target="_blank" href="http://www.servizioglobale.it">Servizio Globale S.R.L.</a>
 		</div>
