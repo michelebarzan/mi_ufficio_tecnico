@@ -3,6 +3,7 @@ var hot;
 var view;
 var consistenzaTronconiCellWidth=180;
 var voci_aggiunte_troncone;
+var id_commessa_gestione_tronconi="";
 
 window.addEventListener("load", async function(event)
 {
@@ -17,6 +18,10 @@ window.addEventListener("load", async function(event)
         allowOutsideClick:false,
         onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="white";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";}
     });
+
+    var cookie_commessa=await getCookie("id_commessa_gestione_tronconi");
+    if(cookie_commessa!=null && cookie_commessa!="")
+        id_commessa_gestione_tronconi=cookie_commessa;
 	
     var check=await checkAccessoEsclusivoConsistenzaCommesse();
     setTimeout(function()
@@ -25,6 +30,11 @@ window.addEventListener("load", async function(event)
         {
             Swal.close();
             insertAccessoEsclusivoConsistenzaCommesse();
+            try
+            {
+                view=document.getElementById("parameter_view").value;
+                getView();
+            } catch (error) {}
         }
         else
         {
@@ -59,6 +69,11 @@ window.addEventListener("load", async function(event)
                     deleteAccessoEsclusivoConsistenzaCommesse();
                     insertAccessoEsclusivoConsistenzaCommesse();
                     Swal.close();
+                    try
+                    {
+                        view=document.getElementById("parameter_view").value;
+                        getView();
+                    } catch (error) {}
                 }
             })
         }
@@ -231,7 +246,7 @@ async function getMascheraGestioneTronconi(button)
     var select=document.createElement("select");
     select.setAttribute("style","text-decoration:none");
     select.setAttribute("id","selectCommessaGestioneTronconi");
-    select.setAttribute("onchange","getMascheraConsistenzaTronconi()");
+    select.setAttribute("onchange","setCookie('id_commessa_gestione_tronconi',this.value);getMascheraConsistenzaTronconi()");
     div.appendChild(select);
     actionBar.appendChild(div);
 
@@ -283,6 +298,20 @@ async function getMascheraGestioneTronconi(button)
     button.appendChild(i);
     actionBar.appendChild(button);
 
+    var div=document.createElement("div");
+    div.setAttribute("class","rcb-select-container");
+    div.setAttribute("style","margin-left:auto;padding:0px;background-color:transparent");
+    var link=document.createElement("a");
+    link.setAttribute("style","color:black;font-family:'Montserrat',sans-serif;font-size:12px")
+    link.setAttribute("href","pianificazioneCommesse.php");
+    link.innerHTML="Pianificazione Commesse";
+    div.appendChild(link);
+    var i=document.createElement("i");
+    i.setAttribute("class","fa-duotone fa-chart-gantt");
+    i.setAttribute("style","margin:0px;margin-left:10px;margin-right:5px");
+    div.appendChild(i);
+    actionBar.appendChild(div);
+
     var select=document.getElementById("selectCommessaGestioneTronconi");
     select.innerHTML="";
 
@@ -296,11 +325,15 @@ async function getMascheraGestioneTronconi(button)
     {
         var option=document.createElement("option");
         option.setAttribute("value",commessa.id_commessa);
+        if(parseInt(id_commessa_gestione_tronconi)==parseInt(commessa.id_commessa))
+            option.setAttribute("selected","selected");
         option.innerHTML=commessa.nome;
         select.appendChild(option);
     });
 
     Swal.close();
+
+    getMascheraConsistenzaTronconi();
 }
 window.onbeforeunload = function() 
 {
@@ -1894,15 +1927,23 @@ async function getMascheraConsistenzaTronconi()
                 var titleContainer=document.createElement("div");
                 titleContainer.setAttribute("class","consistenza-tronconi-troncone-title-container");
                 titleContainer.setAttribute("style","box-sizing:border-box");
+
                 var span=document.createElement("span");
                 span.innerHTML="Troncone";
                 titleContainer.appendChild(span);
+
                 var input=document.createElement("input");
                 input.setAttribute("type","text");
                 input.setAttribute("onfocusout","modificaNomeTroncone(this,'"+troncone.nome+"',"+troncone.id_troncone+")");
                 input.setAttribute("onkeydown","checkEnterModificaNomeTroncone(event,this)");
                 input.setAttribute("value",troncone.nome);
                 titleContainer.appendChild(input);
+
+                var button=document.createElement("button");
+                button.setAttribute("onclick","eliminaTroncone("+troncone.id_troncone+","+consistenza_troncone.tabled.length+")");
+                button.innerHTML='<i class="fa-light fa-xmark"></i>';
+                titleContainer.appendChild(button);
+
                 tronconeOuterContainer.appendChild(titleContainer);
     
                 var containerRow=document.createElement("div");
@@ -2534,4 +2575,49 @@ function getTronconi()
             }
         });
     });
+}
+function eliminaTroncone(id_troncone,n_voci)
+{
+    if(n_voci==0)
+    {
+        $.post("eliminaTroncone.php",{id_troncone},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    console.log(response);
+                    Swal.fire
+                    ({
+                        icon:"error",
+                        title: "Impossibile eliminare il troncone",
+                        text:"Controlla che non sia già stata usato",
+                        background:"#404040",
+                        showCloseButton:true,
+                        showConfirmButton:false,
+                        allowOutsideClick:true,
+                        allowEscapeKey:true,
+                        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="#ddd";document.getElementsByClassName("swal2-content")[0].style.color="#ddd";document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+                    });
+                }
+                else
+                    getMascheraConsistenzaTronconi();
+            }
+        });
+    }
+    else
+    {
+        Swal.fire
+        ({
+            icon:"error",
+            title: 'Prima di eliminare un troncone devi rimuovere tutte le voci',
+            background:"#404040",
+            showCloseButton:true,
+            showConfirmButton:false,
+            allowOutsideClick:true,
+            allowEscapeKey:true,
+            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="#ddd";document.getElementsByClassName("swal2-title")[0].style.fontWeight="normal";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";document.getElementsByClassName("swal2-close")[0].style.outline="none";},
+        });
+    }
 }

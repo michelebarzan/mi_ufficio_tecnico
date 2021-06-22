@@ -3,6 +3,7 @@
 	include "connessione.php";
 
 	$pageName="Gestione Commesse";
+	
 ?>
 <html>
 	<head>
@@ -23,7 +24,11 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
 	</head>
 	<body>
-		<?php include('struttura.php'); ?>
+		<?php
+			include('struttura.php');
+			if(isset($_GET["view"]))
+				echo '<input type="hidden" id="parameter_view" value="'.$_GET["view"].'">';
+		?>
 		<div class="in-page-nav-bar">
 			<div class="in-page-nav-bar-row">
 			</div>

@@ -7,38 +7,33 @@
     $primaryKey="id_macro_attivita";
 
     $columns=[];
-    $colHeaders=[];
+    $colHeaders=["id_macro_attivita","nome","descrizione","durata"];
 
-    $q2="SELECT COLUMN_NAME, CASE WHEN DATA_TYPE = 'varchar' THEN 'text' ELSE 'numeric' END AS type
-        FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE (TABLE_NAME = N'$table')";
-    $r2=sqlsrv_query($conn,$q2);
-    if($r2==FALSE)
+    foreach ($colHeaders as $col)
     {
-        die("error".$q2);
-    }
-    else
-    {
-        while($row2=sqlsrv_fetch_array($r2))
+        $column["data"]=$col;
+
+        switch ($col)
         {
-            array_push($colHeaders,$row2["COLUMN_NAME"]);
-
-            $column["data"]=$row2["COLUMN_NAME"];
-
-            switch ($row2["COLUMN_NAME"])
-            {
-                case $primaryKey:
-                    $column["readOnly"]=true;
-                    $column["type"]=$row2["type"];
-                break;
-                default:
-                    $column["readOnly"]=false;
-                    $column["type"]=$row2["type"];
-                break;
-            }
-
-            array_push($columns,$column);
+            case "id_macro_attivita":
+                $column["readOnly"]=true;
+                $column["type"]="numeric";
+            break;
+            case "nome":
+                $column["readOnly"]=false;
+                $column["type"]="text";
+            break;
+            case "descrizione":
+                $column["readOnly"]=false;
+                $column["type"]="text";
+            break;
+            case "durata":
+                $column["readOnly"]=false;
+                $column["type"]="numeric";
+            break;
         }
+
+        array_push($columns,$column);
     }
 
     $data=[];

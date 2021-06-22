@@ -14,6 +14,7 @@
 		<link rel="stylesheet" href="css/inPageNavBar.css" />
 		<link rel="stylesheet" href="css/darkPopup.css" />
         <link rel="stylesheet" href="css/pianificazioneCommesse.css" />
+		<script src="libs/js/canvasjs.min.js"></script>
 	</head>
 	<body>
 		<?php include('struttura.php'); ?>
@@ -24,6 +25,14 @@
 				<button class="in-page-nav-bar-button" id="btn_gestione_attivita" onclick="getMascheraGestioneAttivita(this)">
 					<span>Gestione attività</span>
                     <i class="fa-duotone fa-list-tree"></i>
+                </button>
+				<button class="in-page-nav-bar-button" id="btn_gestione_attivita" onclick="getMascheraGestioneMacroAttivita(this)">
+					<span>Gestione macro attività</span>
+                    <i class="fa-duotone fa-layer-group"></i>
+                </button>
+				<button class="in-page-nav-bar-button" id="btn_gestione_commesse" onclick="getMascheraGestioneCommesse(this)">
+					<span>Gestione commesse</span>
+                    <i class="fa-duotone fa-ship"></i>
                 </button>
 			</div>
 		</div>
