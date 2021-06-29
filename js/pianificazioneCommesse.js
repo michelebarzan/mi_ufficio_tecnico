@@ -7,6 +7,11 @@ var gestione_macro_attivita_selected_row;
 var intervalHighlightMacroAttivitaSelezionata;
 var consistenzaTronconiCellWidth=180;
 var gestioneMacroAttivitaChartsAndamento=[];
+var filtersGraficoPrevisionale={"tronconi":[],"macro_attivita":[]};
+var dataGraficoPrevisionaleObj;
+var chartGraficoPrevisionale;
+var graficoPrevisionaleInitialProperties={"zoomEnabled":true};
+var graficoPrevisionaleSpostamentoMilestones;
 
 window.addEventListener("load", async function(event)
 {
@@ -1469,7 +1474,6 @@ async function getMascheraDettagliMacroAttivita()
             }
         }
 
-        var rowItems=4;
         for (let index = 0; index < tronconi.length; index++)
         {
             const troncone = tronconi[index];
@@ -1490,16 +1494,10 @@ async function getMascheraDettagliMacroAttivita()
                     document.getElementById("gestioneMacroAttivitaAndamentoChartContainer"+troncone.id_troncone+"_"+andamento.id_andamento).setAttribute("active","false");
                 }
 
-                if(i==rowItems)
-                {
-                    document.getElementById("gestioneMacroAttivitaAndamentoChartContainer"+troncone.id_troncone+"_"+andamento.id_andamento).style.width="calc(100% / 4)";
+                if(i == anagrafica_andamenti.length)
                     document.getElementById("gestioneMacroAttivitaAndamentoChartContainer"+troncone.id_troncone+"_"+andamento.id_andamento).style.marginRight="0px";
-                }
                 else
-                {
-                    document.getElementById("gestioneMacroAttivitaAndamentoChartContainer"+troncone.id_troncone+"_"+andamento.id_andamento).style.width="calc(calc(100% / 4) - 10px)";
                     document.getElementById("gestioneMacroAttivitaAndamentoChartContainer"+troncone.id_troncone+"_"+andamento.id_andamento).style.marginRight="10px";
-                }
 
                 var chart = new CanvasJS.Chart("gestioneMacroAttivitaAndamentoChartContainer"+troncone.id_troncone+"_"+andamento.id_andamento,
                 {
@@ -1992,4 +1990,766 @@ function getConsistenzaTroncone(id_troncone)
             }
         });
     });
+}
+async function getMascheraGestioneAndamenti(button)
+{
+    view="gestione_andamenti";
+
+    $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
+    button.style.borderBottomColor="#4C91CB";
+    button.style.fontWeight="bold";
+
+    document.getElementById("actionBarPianificazioneCommesse").style.display="";
+    document.getElementById("actionBarPianificazioneCommesse").innerHTML="";
+
+    resetContainerStyle();
+    clearViewIntervals();
+
+    document.getElementById("pianificazioneCommesseContainer").style.display="";
+    document.getElementById("pianificazioneCommesseContainer").innerHTML="";
+
+    var actionBar=document.getElementById("actionBarPianificazioneCommesse");
+
+    var div=document.createElement("div");
+    div.setAttribute("class","rcb-select-container");
+    var span=document.createElement("span");
+    span.innerHTML="Andamento: ";
+    div.appendChild(span);
+    var select=document.createElement("select");
+    select.setAttribute("style","text-decoration:none");
+    select.setAttribute("id","selectAndamento");
+    select.setAttribute("onchange","getChartAndamento()");
+
+    var anagrafica_andamenti=await getAnagraficaAndamenti();
+    anagrafica_andamenti.forEach(andamento =>
+    {
+        var option=document.createElement("option");
+        option.setAttribute("value",andamento.id_andamento);
+        option.innerHTML=andamento.nome;
+        select.appendChild(option);
+    });
+    div.appendChild(select);
+    actionBar.appendChild(div);
+
+    var div=document.createElement("div");
+    div.setAttribute("class","rcb-input-icon-container");
+    var input=document.createElement("input");
+    input.setAttribute("id","gestioneAndamentoInputNome");
+    input.setAttribute("type","text");
+    div.appendChild(input);
+    actionBar.appendChild(div);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("onclick","");
+    var span=document.createElement("span");
+    span.innerHTML="Salva modifiche";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-save");
+    button.appendChild(i);
+    actionBar.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("onclick","");
+    var span=document.createElement("span");
+    span.innerHTML="Nuovo andamento";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-plus-circle");
+    button.appendChild(i);
+    actionBar.appendChild(button);
+
+    var div=document.createElement("div");
+    div.setAttribute("id","gestioneAndamentiChartContainer");
+    document.getElementById("pianificazioneCommesseContainer").appendChild(div);
+
+    getChartAndamento();
+}
+async function getChartAndamento()
+{
+    var id_andamento=document.getElementById("selectAndamento").value;
+
+    var anagrafica_andamenti=await getAnagraficaAndamenti();
+    var andamento=getFirstObjByPropValue(anagrafica_andamenti,"id_andamento",id_andamento);
+
+    document.getElementById("gestioneAndamentoInputNome").innerHTML=andamento.nome;
+
+    var chart = new CanvasJS.Chart("gestioneAndamentiChartContainer",
+    {
+        //animationEnabled: true,
+        theme: "light2",
+        axisY:
+        {
+            valueFormatString: " ",
+            tickLength: 0,
+            gridThickness: 0,
+            margin: 0,
+            padding: 0,
+            lineThickness: 1,
+            lineColor:"gray",
+            interval:0.01,
+            min:0,
+            max:2.5
+        },
+        axisX:
+        {
+            valueFormatString: " ",
+            tickLength: 0,
+            gridThickness: 0,
+            margin: 0,
+            padding: 0,
+            lineThickness: 1,
+            lineColor:"gray",
+            minimum: 0,
+            maximum: 100,
+            interval:1
+        },
+        data:
+        [
+            {
+                type: "spline",
+                cursor: "move",
+                dataPoints: andamento.dataPoints
+            }
+        ]
+    });
+      
+    chart.render();
+    
+    var record = false;
+    var snapDistance = 0.01;
+    var xValue, yValue, parentOffset, relX, relY;
+    var selected;
+    var newData = false;
+    var timerId = null;
+      
+    $("#gestioneAndamentiChartContainer .canvasjs-chart-canvas").last().on(
+    {
+        mousedown: function(e)
+        {
+            parentOffset = jQuery(this).parent().offset();
+            relX = e.pageX - parentOffset.left;
+            relY = e.pageY - parentOffset.top;
+            xValue = Math.round(chart.axisX[0].convertPixelToValue(relX));
+            yValue = Math.round(chart.axisY[0].convertPixelToValue(relY));
+            var dps = chart.data[0].dataPoints;
+            for(var i = 0; i < dps.length; i++ )
+            {
+                if((xValue >= dps[i].x - snapDistance && xValue <= dps[i].x + snapDistance) && (yValue >= dps[i].y - snapDistance && yValue <= dps[i].y + snapDistance))
+                {
+                    record = true;
+                    selected = i;
+                    break;
+                }
+                else
+                {
+                    selected = null;
+                }
+            }
+            newData = (selected === null) ? true : false;
+            if(newData)
+            {
+                /*chart.data[0].addTo("dataPoints", {x: xValue, y: yValue});
+                chart.axisX[0].set("maximum", Math.max(chart.axisX[0].maximum, xValue + 30));*/
+                //chart.render();
+            }
+        },
+        mousemove: function(e)
+        {
+            if(record && !newData)
+            {
+                parentOffset = jQuery(this).parent().offset();
+                relX = e.pageX - parentOffset.left;
+                relY = e.pageY - parentOffset.top;
+                xValue = Math.round(chart.axisX[0].convertPixelToValue(relX));
+                yValue = Math.round(chart.axisY[0].convertPixelToValue(relY));
+                clearTimeout(timerId);
+                timerId = setTimeout(function()
+                {
+                    if(selected !== null)
+                    {
+                        chart.data[0].dataPoints[selected].x = xValue;
+                        chart.data[0].dataPoints[selected].y = yValue;
+                        chart.render();
+                    }	
+                }, 0);
+            }
+        },
+        mouseup: function(e)
+        {
+            if(selected !== null)
+            {
+                chart.data[0].dataPoints[selected].x = xValue;
+                chart.data[0].dataPoints[selected].y = yValue;
+                chart.render();
+                record = false;
+            }
+        }
+    });
+}
+async function getMascheraGraficoPrevisionale(button)
+{
+    view="gestione_grafico_previsionale";
+
+    $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
+    button.style.borderBottomColor="#4C91CB";
+    button.style.fontWeight="bold";
+
+    document.getElementById("actionBarPianificazioneCommesse").style.display="";
+    document.getElementById("actionBarPianificazioneCommesse").innerHTML="";
+
+    resetContainerStyle();
+    clearViewIntervals();
+
+    document.getElementById("pianificazioneCommesseContainer").style.display="";
+    document.getElementById("pianificazioneCommesseContainer").innerHTML="";
+    
+    document.getElementById("pianificazioneCommesseContainer").style.width="100%";
+    document.getElementById("pianificazioneCommesseContainer").style.maxWidth="100%";
+    document.getElementById("pianificazioneCommesseContainer").style.minWidth="100%";
+    document.getElementById("pianificazioneCommesseContainer").style.marginLeft="0px";
+    document.getElementById("pianificazioneCommesseContainer").style.marginRight="0px";
+    document.getElementById("pianificazioneCommesseContainer").style.height="calc(100% - 250px)";
+    document.getElementById("pianificazioneCommesseContainer").style.maxHeight="calc(100% - 250px)";
+    document.getElementById("pianificazioneCommesseContainer").style.minHeight="calc(100% - 250px)";
+    document.getElementById("pianificazioneCommesseContainer").style.marginTop="0px";
+    document.getElementById("pianificazioneCommesseContainer").style.marginBottom="0px";
+    document.getElementById("pianificazioneCommesseContainer").style.flexDirection="column";
+    document.getElementById("pianificazioneCommesseContainer").style.alignItems="flex-start";
+    document.getElementById("pianificazioneCommesseContainer").style.justifyContent="flex-start";
+
+    var actionBar=document.getElementById("actionBarPianificazioneCommesse");
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("onclick","");
+    var span=document.createElement("span");
+    span.innerHTML="Esporta";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-file-excel");
+    button.appendChild(i);
+    actionBar.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("onclick","");
+    var span=document.createElement("span");
+    span.innerHTML="Esporta";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-image");
+    button.appendChild(i);
+    actionBar.appendChild(button);
+
+    var div=document.createElement("div");
+    div.setAttribute("class","rcb-text-container rcb-toggle-container");
+
+    var button=document.createElement("button");
+    button.setAttribute("onclick","abilitaZoomGraficoPrevisionale(this)");
+    button.setAttribute("id","graficoPrevisionaleZoomAbilitatoButton");
+    if(graficoPrevisionaleInitialProperties.zoomEnabled)
+        button.setAttribute("style","border-top-left-radius:2px;border-bottom-left-radius:2px;background-color:#4C91CB;color:white");
+    else
+        button.setAttribute("style","border-top-left-radius:2px;border-bottom-left-radius:2px");
+    var span=document.createElement("span");
+    span.innerHTML="Zoom grafico";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-file-excel");
+    button.appendChild(i);
+    div.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("onclick","abilitaSpostamentoMilestonesGraficoPrevisionale(this)");
+    button.setAttribute("id","graficoPrevisionaleSpostamentoMilestonesButton");
+    button.setAttribute("style","border-top-right-radius:2px;border-bottom-right-radius:2px");
+    var span=document.createElement("span");
+    span.innerHTML="Spostamento milestones";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-image");
+    button.appendChild(i);
+    div.appendChild(button);
+
+    actionBar.appendChild(div);
+
+    var graficoPrevisionaleFilterContainer=document.createElement("div");
+    graficoPrevisionaleFilterContainer.setAttribute("id","graficoPrevisionaleFilterContainer");
+    graficoPrevisionaleFilterContainer.setAttribute("class","grafico-previsionale-filter-container");
+
+    var cookie_filtersGraficoPrevisionale=await getCookie("filtersGraficoPrevisionale");
+    if(cookie_filtersGraficoPrevisionale!=null && cookie_filtersGraficoPrevisionale!="")
+        filtersGraficoPrevisionale=JSON.parse(cookie_filtersGraficoPrevisionale);
+
+    var row=document.createElement("div");
+    row.setAttribute("class","grafico-previsionale-filter-row");
+
+    var i=1;
+    var commesse=await getCommesse();
+    for (let index = 0; index < commesse.length; index++)
+    {
+        const commessa = commesse[index];
+
+        var tronconi=await getTronconi(commessa.id_commessa);
+        tronconi.forEach(troncone =>
+        {
+            var button=document.createElement("button");
+            if(filtersGraficoPrevisionale.tronconi.includes(troncone.id_troncone))
+            {
+                button.setAttribute("style","color:white;background-color:"+troncone.color);
+                button.setAttribute("active","true");
+            }
+            else
+                button.setAttribute("active","false");
+            button.setAttribute("active_color",troncone.color);
+            button.setAttribute("array","tronconi");
+            button.setAttribute("class","grafico-previsionale-filter-button grafico-previsionale-filter-commessa");
+            button.setAttribute("id_troncone",troncone.id_troncone);
+            button.setAttribute("onclick","toggleFilterGraficoPrevisionale(this,'id_troncone')");
+            var span=document.createElement("span");
+            span.innerHTML=troncone.nome;
+            button.appendChild(span);
+            row.appendChild(button);
+
+            i++;
+        });
+    }
+
+    graficoPrevisionaleFilterContainer.appendChild(row);
+
+    var row=document.createElement("div");
+    row.setAttribute("class","grafico-previsionale-filter-row");
+    //row.setAttribute("style","margin-top:5px;");
+
+    var i=1;
+    var macro_attivita=await getMacroAttivita();
+    macro_attivita.forEach(macro_attivita_obj =>
+    {
+        var button=document.createElement("button");
+        if(filtersGraficoPrevisionale.macro_attivita.includes(macro_attivita_obj.id_macro_attivita))
+        {
+            button.setAttribute("style","color:white;background-color:#404040");
+            button.setAttribute("active","true");
+        }
+        else
+            button.setAttribute("active","false");
+        button.setAttribute("active_color","#404040");
+        button.setAttribute("array","macro_attivita");
+        button.setAttribute("class","grafico-previsionale-filter-button grafico-previsionale-filter-macro_attivita");
+        button.setAttribute("id_macro_attivita",macro_attivita_obj.id_macro_attivita);
+        button.setAttribute("onclick","toggleFilterGraficoPrevisionale(this,'id_macro_attivita')");
+        var span=document.createElement("span");
+        span.innerHTML=macro_attivita_obj.nome;
+        button.appendChild(span);
+        row.appendChild(button);
+        
+        i++;
+    });
+
+    graficoPrevisionaleFilterContainer.appendChild(row);
+
+    document.getElementById("pianificazioneCommesseContainer").appendChild(graficoPrevisionaleFilterContainer);
+
+    var graficoPrevisionaleChartContainer=document.createElement("div");
+    graficoPrevisionaleChartContainer.setAttribute("id","graficoPrevisionaleChartContainer");
+    graficoPrevisionaleChartContainer.setAttribute("class","grafico-previsionale-chart-container");
+    document.getElementById("pianificazioneCommesseContainer").appendChild(graficoPrevisionaleChartContainer);
+
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    dataGraficoPrevisionaleObj=await getDataGraficoPrevisionale();
+
+    Swal.close();
+
+    var response=filterGraficoPrevisionale();
+    getChartGraficoPrevisionale(response.filteredDataGraficoPrevisionaleObj,response.filteredStripLinesGraficoPrevisionaleObj);
+}
+function getDataGraficoPrevisionale()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.get("getDataGraficoPrevisionalePianificazioneCommesse.php",
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
+}
+function toggleFilterGraficoPrevisionale(button,id)
+{
+    if(button.getAttribute("active")=="false")
+    {
+        button.style.backgroundColor=button.getAttribute("active_color");
+        button.style.color="white";
+        button.setAttribute("active","true");
+        filtersGraficoPrevisionale[button.getAttribute("array")].push(parseInt(button.getAttribute(id)));
+    }
+    else
+    {
+        button.style.backgroundColor="";
+        button.style.color="";
+        button.setAttribute("active","false");
+        filtersGraficoPrevisionale[button.getAttribute("array")].splice(filtersGraficoPrevisionale[button.getAttribute("array")].indexOf(parseInt(button.getAttribute(id))), 1);
+    }
+
+    setCookie("filtersGraficoPrevisionale",JSON.stringify(filtersGraficoPrevisionale));
+
+    var response=filterGraficoPrevisionale();
+    chartGraficoPrevisionale.options.data=response.filteredDataGraficoPrevisionaleObj;
+    chartGraficoPrevisionale.options.axisX.stripLines=response.filteredStripLinesGraficoPrevisionaleObj;
+    chartGraficoPrevisionale.render();
+}
+function filterGraficoPrevisionale()
+{
+    var filteredDataGraficoPrevisionaleObj=[];
+    dataGraficoPrevisionaleObj.data.forEach(item =>
+    {
+        if(item.tipo=="milestone")
+        {
+            var keep=false;
+            filtersGraficoPrevisionale.tronconi.forEach(id_troncone =>
+            {
+                if(item.id_troncone==id_troncone)
+                    keep=true;
+            });
+            if(keep)
+                filteredDataGraficoPrevisionaleObj.push(item);
+        }
+        if(item.tipo=="macro_attivita")
+        {
+            var keep1=false;
+            filtersGraficoPrevisionale.tronconi.forEach(id_troncone =>
+            {
+                if(item.id_troncone==id_troncone)
+                    keep1=true;
+            });
+            var keep2=false;
+            filtersGraficoPrevisionale.macro_attivita.forEach(id_macro_attivita =>
+            {
+                if(item.id_macro_attivita==id_macro_attivita)
+                    keep2=true;
+            });
+            if(keep1 && keep2)
+                filteredDataGraficoPrevisionaleObj.push(item);
+        }
+    });
+    var filteredStripLinesGraficoPrevisionaleObj=[];
+    dataGraficoPrevisionaleObj.stripLines.forEach(stripLine =>
+    {
+        var keep=false;
+        filtersGraficoPrevisionale.tronconi.forEach(id_troncone =>
+        {
+            if(stripLine.id_troncone==id_troncone)
+                keep=true;
+        });
+        if(keep)
+            filteredStripLinesGraficoPrevisionaleObj.push(stripLine);
+    });
+    return {filteredDataGraficoPrevisionaleObj,filteredStripLinesGraficoPrevisionaleObj};
+}
+function getChartGraficoPrevisionale(data,stripLines)
+{
+    /*console.log(data);
+    console.log(stripLines);*/
+
+    var selectedStripLineGraficoPrevisionale = -1;
+    chartGraficoPrevisionale = new CanvasJS.Chart("graficoPrevisionaleChartContainer",
+    {
+        theme:"light2",
+        animationEnabled: true,
+        zoomEnabled:graficoPrevisionaleInitialProperties.zoomEnabled,
+        axisY :
+        {
+            title: "Ore",
+            titleFontFamily: "'Montserrat',sans-serif",
+            titleFontWeight: "bold",
+            titleFontColor: "black",
+            titleFontSize: 14,
+            valueFormatString: "########"
+        },
+        axisX :
+        {
+            stripLines,
+            title: "Settimane",
+            titleFontFamily: "'Montserrat',sans-serif",
+            titleFontWeight: "bold",
+            titleFontColor: "black",
+            titleFontSize: 14,
+            labelAutoFit: false,
+            labelAngle: 270,
+            interval:1
+        },
+        toolTip:
+        {
+            shared: "true",
+            contentFormatter: function(e)
+            {
+                if(chartGraficoPrevisionale.zoomEnabled)
+                {
+                    var outerContainer=document.createElement("div");
+                    outerContainer.setAttribute("class","grafico-previsionale-tooltip-outer-container");
+    
+                    var titleContainer=document.createElement("div");
+                    titleContainer.setAttribute("class","grafico-previsionale-tooltip-title-container");
+                    
+                    var span=document.createElement("span");
+                    span.setAttribute("style","color:white");
+                    span.innerHTML=e.entries[0].dataPoint.label;
+                    titleContainer.appendChild(span);
+    
+                    outerContainer.appendChild(titleContainer);
+    
+                    var table=document.createElement("table");
+                    table.setAttribute("class","grafico-previsionale-tooltip-table");
+    
+                    var tr=document.createElement("tr");
+                    var th=document.createElement("th");
+                    th.innerHTML="Troncone";
+                    tr.appendChild(th);
+                    var th=document.createElement("th");
+                    th.innerHTML="Macro attivita";
+                    tr.appendChild(th);
+                    var th=document.createElement("th");
+                    tr.appendChild(th);
+                    table.appendChild(tr);
+    
+                    var totaleOre=0;
+                    
+                    for (var i = 0; i < e.entries.length; i++)
+                    {
+                        if(e.entries[i].dataSeries.options.tipo=="macro_attivita")
+                        {
+                            var tr=document.createElement("tr");
+                            var td=document.createElement("td");
+                            td.innerHTML=e.entries[i].dataSeries.options.nome_troncone;
+                            tr.appendChild(td);
+                            var td=document.createElement("td");
+                            td.innerHTML=e.entries[i].dataSeries.options.nome_macro_attivita;
+                            tr.appendChild(td);
+                            var td=document.createElement("td");
+                            td.innerHTML=Math.round(e.entries[i].dataPoint.y);
+                            totaleOre+=Math.round(e.entries[i].dataPoint.y);
+                            tr.appendChild(td);
+                            table.appendChild(tr);
+                        }
+                    }
+    
+                    th.innerHTML="Ore (<b>"+totaleOre+"</b>)";
+    
+                    outerContainer.appendChild(table);
+    
+                    var n_milestones=0;
+                    for (var i = 0; i < e.entries.length; i++)
+                    {
+                        if(e.entries[i].dataSeries.options.tipo=="milestone")
+                        {
+                            var span=document.createElement("span");
+                            if(n_milestones==0)
+                                span.setAttribute("style","color:black;font-weight:bold;margin:5px;");
+                            else
+                                span.setAttribute("style","color:black;font-weight:bold;margin-left:5px;margin-right:5px;margin-bottom:5px");
+                            span.innerHTML=e.entries[i].dataSeries.name;
+                            outerContainer.appendChild(span);
+    
+                            n_milestones++;
+                        }
+                    }
+    
+                    return outerContainer.outerHTML;
+                }
+                else
+                    return null;
+            }
+        },
+        data
+    });
+    chartGraficoPrevisionale.render();
+
+    $(".canvasjs-chart-canvas").last().on("mousedown", function(e)
+    {
+        if(graficoPrevisionaleSpostamentoMilestones)
+        {
+            // Get the selected stripLine
+            var parentOffset = $(this).parent().offset();
+            var relX = e.pageX - parentOffset.left;
+            var relY = e.pageY - parentOffset.top;
+            var snapDistance = 1;
+            
+            for(var i = 0; i < chartGraficoPrevisionale.options.axisX.stripLines.length; i++)
+            {
+                if
+                (
+                    relX > chartGraficoPrevisionale.axisX[0].stripLines[i].get("bounds").x1 - snapDistance &&
+                    relX < chartGraficoPrevisionale.axisX[0].stripLines[i].get("bounds").x2 + snapDistance &&
+                    relY > chartGraficoPrevisionale.axisX[0].stripLines[i].get("bounds").y1 &&
+                    relY < chartGraficoPrevisionale.axisX[0].stripLines[i].get("bounds").y2
+                )
+                {
+                    selectedStripLineGraficoPrevisionale = i;
+                    //console.log(chartGraficoPrevisionale.options.axisX.stripLines[selectedStripLineGraficoPrevisionale].value);
+                }
+            }
+        }
+    });
+
+    $(".canvasjs-chart-canvas").last().on("mousemove", function(e)
+    {
+        if(graficoPrevisionaleSpostamentoMilestones)
+        {
+            // Move the selected stripLine
+            if(selectedStripLineGraficoPrevisionale !== -1)
+            {
+                var parentOffset = $(this).parent().offset();
+                var relX = e.pageX - parentOffset.left;
+                chartGraficoPrevisionale.options.axisX.stripLines[selectedStripLineGraficoPrevisionale].value = Math.round(chartGraficoPrevisionale.axisX[0].convertPixelToValue(relX));
+                chartGraficoPrevisionale.render();
+            }
+            else
+            {
+                var parentOffset = $(this).parent().offset();
+                var relX = e.pageX - parentOffset.left;
+                var relY = e.pageY - parentOffset.top;
+                var snapDistance = 1;
+                
+                for(var i = 0; i < chartGraficoPrevisionale.options.axisX.stripLines.length; i++)
+                {
+                    if
+                    (
+                        relX > chartGraficoPrevisionale.axisX[0].stripLines[i].get("bounds").x1 - snapDistance &&
+                        relX < chartGraficoPrevisionale.axisX[0].stripLines[i].get("bounds").x2 + snapDistance &&
+                        relY > chartGraficoPrevisionale.axisX[0].stripLines[i].get("bounds").y1 &&
+                        relY < chartGraficoPrevisionale.axisX[0].stripLines[i].get("bounds").y2
+                    )
+                    {
+                        $(this).css("cursor","move");
+                    }
+                }
+            }
+        }
+    });
+
+    $(".canvasjs-chart-canvas").last().on("mouseup", function(e)
+    {
+        if(graficoPrevisionaleSpostamentoMilestones)
+        {
+            if(selectedStripLineGraficoPrevisionale != -1)
+            {
+                if(chartGraficoPrevisionale.options.axisX.stripLines[selectedStripLineGraficoPrevisionale].principale)
+                {
+                    runModificaSettimanaMilestonePrincipale(chartGraficoPrevisionale.options.axisX.stripLines[selectedStripLineGraficoPrevisionale].id,dataGraficoPrevisionaleObj.axis_x_points[chartGraficoPrevisionale.options.axisX.stripLines[selectedStripLineGraficoPrevisionale].value]);
+                }
+            }
+            // Clear Selection and change the cursor
+            selectedStripLineGraficoPrevisionale = -1;
+            $(this).css("cursor","default");
+        }
+    });
+
+    //console.log(chartGraficoPrevisionale);
+}
+async function runModificaSettimanaMilestonePrincipale(id_milestone_principale,point)
+{
+    var anno=point.label.split("_")[0];
+    var settimana=point.label.split("_")[1];
+
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    var response=await modificaSettimanaMilestonePrincipale(id_milestone_principale,anno,settimana);
+    if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+    {
+        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+        console.log(response);
+    }
+    else
+    {
+        dataGraficoPrevisionaleObj=await getDataGraficoPrevisionale();
+    
+        Swal.close();
+    
+        var response=filterGraficoPrevisionale();
+        chartGraficoPrevisionale.options.data=response.filteredDataGraficoPrevisionaleObj;
+        chartGraficoPrevisionale.options.axisX.stripLines=response.filteredStripLinesGraficoPrevisionaleObj;
+        chartGraficoPrevisionale.render();
+    }
+}
+function modificaSettimanaMilestonePrincipale(id_milestone_principale,anno,settimana)
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.post("modificaSettimanaMilestonePrincipalePianificazioneCommesse.php",{id_milestone_principale,anno,settimana},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                resolve(response);
+            }
+        });
+    });
+}
+function abilitaZoomGraficoPrevisionale(button)
+{
+    chartGraficoPrevisionale.options.zoomEnabled = true;
+    graficoPrevisionaleSpostamentoMilestones = false;
+    chartGraficoPrevisionale.render();
+    button.style.backgroundColor = "#4C91CB";
+    button.style.color = "white";
+    document.getElementById("graficoPrevisionaleSpostamentoMilestonesButton").style.backgroundColor = "";
+    document.getElementById("graficoPrevisionaleSpostamentoMilestonesButton").style.color = "";
+}
+function abilitaSpostamentoMilestonesGraficoPrevisionale(button)
+{
+    chartGraficoPrevisionale.options.zoomEnabled = false;
+    chartGraficoPrevisionale.options.axisX.viewportMinimum = null;
+    chartGraficoPrevisionale.options.axisX.viewportMaximum = null;
+    graficoPrevisionaleSpostamentoMilestones = true;
+    chartGraficoPrevisionale.render();
+    button.style.backgroundColor = "#4C91CB";
+    button.style.color = "white";
+    document.getElementById("graficoPrevisionaleZoomAbilitatoButton").style.backgroundColor = "";
+    document.getElementById("graficoPrevisionaleZoomAbilitatoButton").style.color = "";        
 }
