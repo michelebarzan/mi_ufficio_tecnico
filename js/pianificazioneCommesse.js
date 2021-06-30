@@ -10,8 +10,15 @@ var gestioneMacroAttivitaChartsAndamento=[];
 var filtersGraficoPrevisionale={"tronconi":[],"macro_attivita":[]};
 var dataGraficoPrevisionaleObj;
 var chartGraficoPrevisionale;
-var graficoPrevisionaleInitialProperties={"zoomEnabled":true};
-var graficoPrevisionaleSpostamentoMilestones;
+var graficoPrevisionaleInitialProperties=
+{
+    zoomEnabled:false,
+    toolTip:
+    {
+        enabled:false
+    }
+};
+var graficoPrevisionaleSpostamentoMilestones =true;
 
 window.addEventListener("load", async function(event)
 {
@@ -1501,7 +1508,7 @@ async function getMascheraDettagliMacroAttivita()
 
                 var chart = new CanvasJS.Chart("gestioneMacroAttivitaAndamentoChartContainer"+troncone.id_troncone+"_"+andamento.id_andamento,
                 {
-                    animationEnabled: true,
+                    animationEnabled: false,
                     interactivityEnabled: false,
                     backgroundColor:"transparent",
                     title:
@@ -1838,9 +1845,14 @@ function salvaModificheMacroAttivita(id_troncone,id_macro_attivita,id_macro_atti
                 }
                 else
                 {
-                    document.getElementById("gestioneMacroAttivitaDurataSaveButton"+id_troncone).style.backgroundColor="";
-
-                    setTotaliTronconeGestioneMacroAttivita(id_troncone,id_macro_attivita);
+                    if(id_macro_attivita_milestone==null)
+                        getMascheraDettagliMacroAttivita();
+                    else
+                    {
+                        document.getElementById("gestioneMacroAttivitaDurataSaveButton"+id_troncone).style.backgroundColor="";
+    
+                        setTotaliTronconeGestioneMacroAttivita(id_troncone,id_macro_attivita);
+                    }
                 }
             }
         });
@@ -2258,23 +2270,39 @@ async function getMascheraGraficoPrevisionale(button)
     span.innerHTML="Zoom grafico";
     button.appendChild(span);
     var i=document.createElement("i");
-    i.setAttribute("class","fad fa-file-excel");
+    i.setAttribute("class","fa-regular fa-magnifying-glass");
     button.appendChild(i);
     div.appendChild(button);
 
     var button=document.createElement("button");
     button.setAttribute("onclick","abilitaSpostamentoMilestonesGraficoPrevisionale(this)");
     button.setAttribute("id","graficoPrevisionaleSpostamentoMilestonesButton");
-    button.setAttribute("style","border-top-right-radius:2px;border-bottom-right-radius:2px");
+    if(graficoPrevisionaleSpostamentoMilestones)
+        button.setAttribute("style","border-top-left-radius:2px;border-bottom-left-radius:2px;background-color:#4C91CB;color:white");
+    else
+        button.setAttribute("style","border-top-left-radius:2px;border-bottom-left-radius:2px");
     var span=document.createElement("span");
     span.innerHTML="Spostamento milestones";
     button.appendChild(span);
     var i=document.createElement("i");
-    i.setAttribute("class","fad fa-image");
+    i.setAttribute("class","fa-regular fa-up-down-left-right");
     button.appendChild(i);
     div.appendChild(button);
 
     actionBar.appendChild(div);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("onclick","toggleTooltipGraficoPrevisionale(this)");
+    if(graficoPrevisionaleInitialProperties.toolTip.enabled)
+        button.setAttribute("style","background-color:#4C91CB;color:white");
+    var span=document.createElement("span");
+    span.innerHTML="Tooltip";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fa-duotone fa-circle-info");
+    button.appendChild(i);
+    actionBar.appendChild(button);
 
     var graficoPrevisionaleFilterContainer=document.createElement("div");
     graficoPrevisionaleFilterContainer.setAttribute("id","graficoPrevisionaleFilterContainer");
@@ -2485,6 +2513,12 @@ function getChartGraficoPrevisionale(data,stripLines)
     /*console.log(data);
     console.log(stripLines);*/
 
+    graficoPrevisionaleSpostamentoMilestones = true;
+
+    try {
+        chartGraficoPrevisionale.destroy();
+    } catch (error) {}
+
     var selectedStripLineGraficoPrevisionale = -1;
     chartGraficoPrevisionale = new CanvasJS.Chart("graficoPrevisionaleChartContainer",
     {
@@ -2493,21 +2527,15 @@ function getChartGraficoPrevisionale(data,stripLines)
         zoomEnabled:graficoPrevisionaleInitialProperties.zoomEnabled,
         axisY :
         {
-            title: "Ore",
-            titleFontFamily: "'Montserrat',sans-serif",
-            titleFontWeight: "bold",
-            titleFontColor: "black",
-            titleFontSize: 14,
-            valueFormatString: "########"
+            valueFormatString: "########",
+            labelFontFamily:"'Montserrat',sans-serif",
+            labelFontSize:12
         },
         axisX :
         {
             stripLines,
-            title: "Settimane",
-            titleFontFamily: "'Montserrat',sans-serif",
-            titleFontWeight: "bold",
-            titleFontColor: "black",
-            titleFontSize: 14,
+            labelFontFamily:"'Montserrat',sans-serif",
+            labelFontSize:12,
             labelAutoFit: false,
             labelAngle: 270,
             interval:1
@@ -2515,83 +2543,79 @@ function getChartGraficoPrevisionale(data,stripLines)
         toolTip:
         {
             shared: "true",
+            enabled: graficoPrevisionaleInitialProperties.toolTip.enabled,
             contentFormatter: function(e)
             {
-                if(chartGraficoPrevisionale.zoomEnabled)
+                var outerContainer=document.createElement("div");
+                outerContainer.setAttribute("class","grafico-previsionale-tooltip-outer-container");
+
+                var titleContainer=document.createElement("div");
+                titleContainer.setAttribute("class","grafico-previsionale-tooltip-title-container");
+                
+                var span=document.createElement("span");
+                span.setAttribute("style","color:white");
+                span.innerHTML=e.entries[0].dataPoint.label;
+                titleContainer.appendChild(span);
+
+                outerContainer.appendChild(titleContainer);
+
+                var table=document.createElement("table");
+                table.setAttribute("class","grafico-previsionale-tooltip-table");
+
+                var tr=document.createElement("tr");
+                var th=document.createElement("th");
+                th.innerHTML="Troncone";
+                tr.appendChild(th);
+                var th=document.createElement("th");
+                th.innerHTML="Macro attivita";
+                tr.appendChild(th);
+                var th=document.createElement("th");
+                tr.appendChild(th);
+                table.appendChild(tr);
+
+                var totaleOre=0;
+                
+                for (var i = 0; i < e.entries.length; i++)
                 {
-                    var outerContainer=document.createElement("div");
-                    outerContainer.setAttribute("class","grafico-previsionale-tooltip-outer-container");
-    
-                    var titleContainer=document.createElement("div");
-                    titleContainer.setAttribute("class","grafico-previsionale-tooltip-title-container");
-                    
-                    var span=document.createElement("span");
-                    span.setAttribute("style","color:white");
-                    span.innerHTML=e.entries[0].dataPoint.label;
-                    titleContainer.appendChild(span);
-    
-                    outerContainer.appendChild(titleContainer);
-    
-                    var table=document.createElement("table");
-                    table.setAttribute("class","grafico-previsionale-tooltip-table");
-    
-                    var tr=document.createElement("tr");
-                    var th=document.createElement("th");
-                    th.innerHTML="Troncone";
-                    tr.appendChild(th);
-                    var th=document.createElement("th");
-                    th.innerHTML="Macro attivita";
-                    tr.appendChild(th);
-                    var th=document.createElement("th");
-                    tr.appendChild(th);
-                    table.appendChild(tr);
-    
-                    var totaleOre=0;
-                    
-                    for (var i = 0; i < e.entries.length; i++)
+                    if(e.entries[i].dataSeries.options.tipo=="macro_attivita")
                     {
-                        if(e.entries[i].dataSeries.options.tipo=="macro_attivita")
-                        {
-                            var tr=document.createElement("tr");
-                            var td=document.createElement("td");
-                            td.innerHTML=e.entries[i].dataSeries.options.nome_troncone;
-                            tr.appendChild(td);
-                            var td=document.createElement("td");
-                            td.innerHTML=e.entries[i].dataSeries.options.nome_macro_attivita;
-                            tr.appendChild(td);
-                            var td=document.createElement("td");
-                            td.innerHTML=Math.round(e.entries[i].dataPoint.y);
-                            totaleOre+=Math.round(e.entries[i].dataPoint.y);
-                            tr.appendChild(td);
-                            table.appendChild(tr);
-                        }
+                        var tr=document.createElement("tr");
+                        var td=document.createElement("td");
+                        td.innerHTML=e.entries[i].dataSeries.options.nome_troncone;
+                        tr.appendChild(td);
+                        var td=document.createElement("td");
+                        td.innerHTML=e.entries[i].dataSeries.options.nome_macro_attivita;
+                        tr.appendChild(td);
+                        var td=document.createElement("td");
+                        td.innerHTML=Math.round(e.entries[i].dataPoint.y);
+                        totaleOre+=Math.round(e.entries[i].dataPoint.y);
+                        tr.appendChild(td);
+                        table.appendChild(tr);
                     }
-    
-                    th.innerHTML="Ore (<b>"+totaleOre+"</b>)";
-    
-                    outerContainer.appendChild(table);
-    
-                    var n_milestones=0;
-                    for (var i = 0; i < e.entries.length; i++)
-                    {
-                        if(e.entries[i].dataSeries.options.tipo=="milestone")
-                        {
-                            var span=document.createElement("span");
-                            if(n_milestones==0)
-                                span.setAttribute("style","color:black;font-weight:bold;margin:5px;");
-                            else
-                                span.setAttribute("style","color:black;font-weight:bold;margin-left:5px;margin-right:5px;margin-bottom:5px");
-                            span.innerHTML=e.entries[i].dataSeries.name;
-                            outerContainer.appendChild(span);
-    
-                            n_milestones++;
-                        }
-                    }
-    
-                    return outerContainer.outerHTML;
                 }
-                else
-                    return null;
+
+                th.innerHTML="Ore (<b>"+totaleOre+"</b>)";
+
+                outerContainer.appendChild(table);
+
+                var n_milestones=0;
+                for (var i = 0; i < e.entries.length; i++)
+                {
+                    if(e.entries[i].dataSeries.options.tipo=="milestone")
+                    {
+                        var span=document.createElement("span");
+                        if(n_milestones==0)
+                            span.setAttribute("style","color:black;font-weight:bold;margin:5px;");
+                        else
+                            span.setAttribute("style","color:black;font-weight:bold;margin-left:5px;margin-right:5px;margin-bottom:5px");
+                        span.innerHTML=e.entries[i].dataSeries.name;
+                        outerContainer.appendChild(span);
+
+                        n_milestones++;
+                    }
+                }
+
+                return outerContainer.outerHTML;
             }
         },
         data
@@ -2671,6 +2695,10 @@ function getChartGraficoPrevisionale(data,stripLines)
                 {
                     runModificaSettimanaMilestonePrincipale(chartGraficoPrevisionale.options.axisX.stripLines[selectedStripLineGraficoPrevisionale].id,dataGraficoPrevisionaleObj.axis_x_points[chartGraficoPrevisionale.options.axisX.stripLines[selectedStripLineGraficoPrevisionale].value]);
                 }
+                else
+                {
+                    runModificaSettimanaMilestone(chartGraficoPrevisionale.options.axisX.stripLines[selectedStripLineGraficoPrevisionale].id,dataGraficoPrevisionaleObj.axis_x_points[chartGraficoPrevisionale.options.axisX.stripLines[selectedStripLineGraficoPrevisionale].value]);
+                }
             }
             // Clear Selection and change the cursor
             selectedStripLineGraficoPrevisionale = -1;
@@ -2679,6 +2707,58 @@ function getChartGraficoPrevisionale(data,stripLines)
     });
 
     //console.log(chartGraficoPrevisionale);
+}
+async function runModificaSettimanaMilestone(id_milestone,point)
+{
+    var anno=point.label.split("_")[0];
+    var settimana=point.label.split("_")[1];
+
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    var response=await modificaSettimanaMilestone(id_milestone,anno,settimana);
+    if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+    {
+        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+        console.log(response);
+    }
+    else
+    {
+        dataGraficoPrevisionaleObj=await getDataGraficoPrevisionale();
+    
+        Swal.close();
+    
+        var response=filterGraficoPrevisionale();
+        chartGraficoPrevisionale.options.data=response.filteredDataGraficoPrevisionaleObj;
+        chartGraficoPrevisionale.options.axisX.stripLines=response.filteredStripLinesGraficoPrevisionaleObj;
+        chartGraficoPrevisionale.render();
+    }
+}
+function modificaSettimanaMilestone(id_milestone,anno,settimana)
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.post("modificaSettimanaMilestonePianificazioneCommesse.php",{id_milestone,anno,settimana},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                console.log(response);
+                resolve(response);
+            }
+        });
+    });
 }
 async function runModificaSettimanaMilestonePrincipale(id_milestone_principale,point)
 {
@@ -2752,4 +2832,20 @@ function abilitaSpostamentoMilestonesGraficoPrevisionale(button)
     button.style.color = "white";
     document.getElementById("graficoPrevisionaleZoomAbilitatoButton").style.backgroundColor = "";
     document.getElementById("graficoPrevisionaleZoomAbilitatoButton").style.color = "";        
+}
+function toggleTooltipGraficoPrevisionale(button)
+{
+    chartGraficoPrevisionale.options.toolTip.enabled=!chartGraficoPrevisionale.options.toolTip.enabled;
+    chartGraficoPrevisionale.render();
+    
+    if(chartGraficoPrevisionale.options.toolTip.enabled)
+    {
+        button.style.backgroundColor="#4C91CB";
+        button.style.color="white";
+    }
+    else
+    {
+        button.style.backgroundColor="white";
+        button.style.color="black";
+    }
 }
