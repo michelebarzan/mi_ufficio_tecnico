@@ -19,6 +19,7 @@
             $macro_attivita_item["nome"]=utf8_encode($row["nome"]);
             $macro_attivita_item["descrizione"]=utf8_encode($row["descrizione"]);
             $macro_attivita_item["durata"]=$row["durata"];
+            $macro_attivita_item["color"]=$row["color"];
             
             array_push($macro_attivita,$macro_attivita_item);
         }

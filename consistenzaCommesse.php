@@ -37,10 +37,10 @@
 					<span>Collegamento tabelle</span>
                     <i class="fa-duotone fa-table"></i>
                 </button>
-				<button class="in-page-nav-bar-button" id="btn_gestione_tronconi" onclick="getMascheraGestioneTronconi(this)">
+				<!--<button class="in-page-nav-bar-button" id="btn_gestione_tronconi" onclick="getMascheraGestioneTronconi(this)">
 					<span>Gestione tronconi</span>
                     <i class="fa-duotone fa-split"></i>
-                </button>
+                </button>-->
 			</div>
 		</div>
 		<div class="reusable-control-bar" id="consistenzaCommesseActionBar" style="display:none"></div>

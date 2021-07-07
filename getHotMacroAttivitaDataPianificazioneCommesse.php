@@ -4,10 +4,10 @@
     include "connessioneDb.php";
 
     $table=$_REQUEST["table"];
-    $primaryKey="id_macro_attivita";
+    $primaryKey="id";
 
     $columns=[];
-    $colHeaders=["id_macro_attivita","nome","descrizione","durata"];
+    $colHeaders=["id","nome","descrizione","durata_unitaria(ore)","colore"];
 
     foreach ($colHeaders as $col)
     {
@@ -27,9 +27,13 @@
                 $column["readOnly"]=false;
                 $column["type"]="text";
             break;
-            case "durata":
+            case "durata_unitaria(ore)":
                 $column["readOnly"]=false;
                 $column["type"]="numeric";
+            break;
+            case "colore":
+                $column["readOnly"]=false;
+                $column["type"]="text";
             break;
         }
 

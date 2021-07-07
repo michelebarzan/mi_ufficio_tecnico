@@ -17,6 +17,7 @@
         {
             $commessa["id_commessa"]=$row["id_commessa"];
             $commessa["nome"]=$row["nome"];
+            $commessa["color"]=$row["color"];
 
             array_push($commesse,$commessa);
         }

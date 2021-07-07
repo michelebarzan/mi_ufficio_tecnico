@@ -133,7 +133,8 @@
     {
         while($row1=sqlsrv_fetch_array($r1))
         {
-            $rowObj["color"]=$row1["color"];
+            $rowObj["color_commessa"]=$row1["color_commessa"];
+            $rowObj["color_macro_attivita"]=$row1["color_macro_attivita"];
             $rowObj["id_troncone"]=$row1["id_troncone"];
             $rowObj["id_macro_attivita"]=$row1["id_macro_attivita"];
 
@@ -169,7 +170,7 @@
 
     //CREO UN ARRAY CON LE MILESTONES
     $milestones=[];
-    $q6="SELECT anagrafica_tronconi.nome AS nome_troncone, dbo.milestones.id_milestone, dbo.milestones.nome, dbo.milestones.descrizione, dbo.milestones.troncone, dbo.milestones.settimana, dbo.milestones.anno, mi_webapp.dbo.anagrafica_commesse.color
+    $q6="SELECT anagrafica_tronconi.nome AS nome_troncone, dbo.milestones.id_milestone, dbo.milestones.nome, dbo.milestones.descrizione, dbo.milestones.troncone, dbo.milestones.settimana, dbo.milestones.anno, mi_webapp.dbo.anagrafica_commesse.color AS color_commessa
         FROM dbo.milestones INNER JOIN dbo.anagrafica_tronconi ON dbo.milestones.troncone = dbo.anagrafica_tronconi.id_troncone INNER JOIN mi_webapp.dbo.anagrafica_commesse ON dbo.anagrafica_tronconi.commessa = mi_webapp.dbo.anagrafica_commesse.id_commessa";
     $r6=sqlsrv_query($conn,$q6);
     if($r6==FALSE)
@@ -181,9 +182,7 @@
         while($row6=sqlsrv_fetch_array($r6))
         {
             $milestone["name"]=utf8_encode($row6["nome_troncone"] . ': ' . $row6["nome"]);
-            /*$milestone["color"]="black";
-            $milestone["risingColor"]=$row6["color"];*/
-            $milestone["color"]=$row6["color"];
+            $milestone["color_commessa"]=$row6["color_commessa"];
             $milestone["principale"]=false;
             $milestone["id"]=$row6["id_milestone"];
             $milestone["nome"]=utf8_encode($row6["nome"]);
@@ -203,7 +202,7 @@
         }
     }
 
-    $q7="SELECT anagrafica_tronconi.nome AS nome_troncone, dbo.milestones_principali.id_milestone_principale, dbo.milestones_principali.nome, dbo.milestones_principali.descrizione, dbo.milestones_principali.troncone, dbo.milestones_principali.settimana, dbo.milestones_principali.anno, mi_webapp.dbo.anagrafica_commesse.color
+    $q7="SELECT anagrafica_tronconi.nome AS nome_troncone, dbo.milestones_principali.id_milestone_principale, dbo.milestones_principali.nome, dbo.milestones_principali.descrizione, dbo.milestones_principali.troncone, dbo.milestones_principali.settimana, dbo.milestones_principali.anno, mi_webapp.dbo.anagrafica_commesse.color AS color_commessa
         FROM dbo.milestones_principali INNER JOIN dbo.anagrafica_tronconi ON dbo.milestones_principali.troncone = dbo.anagrafica_tronconi.id_troncone INNER JOIN mi_webapp.dbo.anagrafica_commesse ON dbo.anagrafica_tronconi.commessa = mi_webapp.dbo.anagrafica_commesse.id_commessa";
     $r7=sqlsrv_query($conn,$q7);
     if($r7==FALSE)
@@ -215,9 +214,7 @@
         while($row7=sqlsrv_fetch_array($r7))
         {
             $milestone["name"]=utf8_encode($row7["nome_troncone"] . ': ' . $row7["nome"]);
-            /*$milestone["color"]="black";
-            $milestone["risingColor"]=$row7["color"];*/
-            $milestone["color"]=$row7["color"];
+            $milestone["color_commessa"]=$row7["color_commessa"];
             $milestone["principale"]=true;
             $milestone["id"]=$row7["id_milestone_principale"];
             $milestone["nome"]=utf8_encode($row7["nome"]);
@@ -286,6 +283,40 @@
     $settimana_inizio=min($settimane_inizio_fine);
     $settimana_fine=max($settimane_inizio_fine);
 
+    //aggiungo una settimana all'inizio
+    $settimana_inizio--;
+    $anno = substr($settimana_inizio, 0, 4);
+    $settimana = str_replace($anno,"",$settimana_inizio);
+
+    $anno=intval($anno);
+    $settimana=intval($settimana);
+    while (in_array($anno."_".$settimana, $settimane)==false)
+    {
+        $settimana_inizio--;
+        $anno = substr($settimana_inizio, 0, 4);
+        $settimana = str_replace($anno,"",$settimana_inizio);
+
+        $anno=intval($anno);
+        $settimana=intval($settimana);
+    }
+    
+    //aggiungo una settimana all'fine
+    $settimana_fine++;
+    $anno = substr($settimana_fine, 0, 4);
+    $settimana = str_replace($anno,"",$settimana_fine);
+
+    $anno=intval($anno);
+    $settimana=intval($settimana);
+    while (in_array($anno."_".$settimana, $settimane)==false)
+    {
+        $settimana_fine++;
+        $anno = substr($settimana_fine, 0, 4);
+        $settimana = str_replace($anno,"",$settimana_fine);
+
+        $anno=intval($anno);
+        $settimana=intval($settimana);
+    }
+
     $x_values_int=[];
     $settimana=$settimana_inizio;
     while($settimana<=$settimana_fine)
@@ -317,9 +348,9 @@
     $item=null;
     foreach ($new_view_grafico_previsionale as $line)
     {
-        //$item["toolTipContent"]='{name}: {x}';
         $item["tipo"]="macro_attivita";
-        $item["color"]=$line["color"];
+        $item["color_commessa"]=$line["color_commessa"];
+        $item["color_macro_attivita"]=$line["color_macro_attivita"];
         $item["type"]="stackedArea";
         $item["name"]=getNomeTroncone($line['id_troncone'],$tronconi) . " - " . getNomeMacroAttivita($line['id_macro_attivita'],$macro_attivita);
         $item["id_troncone"]=$line['id_troncone'];
@@ -356,15 +387,15 @@
     foreach ($milestones as $milestone)
     {
         //stripline
-        $stripLine["color"]=$milestone["color"];
-        $stripLine["thickness"]=4;
+        $stripLine["color"]=$milestone["color_commessa"];
+        $stripLine["thickness"]=5;
         $stripLine["label"]=$milestone["nome"];
         $stripLine["labelFontFamily"]="'Montserrat',sans-serif";
         $stripLine["labelFontColor"]="black";
         if($milestone["principale"])
         {
             $stripLine["labelFontWeight"]="bold";
-            $stripLine["labelBackgroundColor"]=$milestone["color"];
+            $stripLine["labelBackgroundColor"]=$milestone["color_commessa"];
         }
         else
         {
@@ -390,6 +421,7 @@
         $item["tipo"]="milestone";
         $item["color"]="transparent";
         $item["risingColor"]="transparent";
+        $item["color_commessa"]=$milestone["color_commessa"];
         $item["id_troncone"]=$milestone["troncone"];
         $item["type"]="candlestick";
         $item["name"]=$milestone["name"];

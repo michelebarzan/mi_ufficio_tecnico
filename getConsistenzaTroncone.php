@@ -141,6 +141,22 @@
     }
 
     $consistenza_troncone["voci_2"]=$voci_2;
+
+    $q4="SELECT nome,settimana
+        FROM dbo.milestones_principali
+        WHERE (troncone = $id_troncone)";
+    $r4=sqlsrv_query($conn,$q4);
+    if($r4==FALSE)
+    {
+        die("error");
+    }
+    else
+    {
+        while($row4=sqlsrv_fetch_array($r4))
+        {
+            $consistenza_troncone[$row4["nome"]]=$row4["settimana"];
+        }
+    }
     
     echo json_encode($consistenza_troncone);
 

@@ -22,6 +22,10 @@
 			<div class="in-page-nav-bar-row">
 			</div>
 			<div class="in-page-nav-bar-row">
+				<button class="in-page-nav-bar-button" id="btn_gestione_commesse" onclick="getMascheraGestioneCommesse(this)">
+					<span>Gestione commesse</span>
+                    <i class="fa-duotone fa-ship"></i>
+                </button>
 				<button class="in-page-nav-bar-button" id="btn_gestione_attivita" onclick="getMascheraGestioneAttivita(this)">
 					<span>Gestione attività</span>
                     <i class="fa-duotone fa-list-tree"></i>
@@ -34,11 +38,7 @@
 					<span>Gestione andamenti</span>
                     <i class="fa-duotone fa-chart-line"></i>
                 </button>-->
-				<button class="in-page-nav-bar-button" id="btn_gestione_commesse" onclick="getMascheraGestioneCommesse(this)">
-					<span>Gestione commesse</span>
-                    <i class="fa-duotone fa-ship"></i>
-                </button>
-				<button class="in-page-nav-bar-button" id="btn_gestione_commesse" onclick="getMascheraGraficoPrevisionale(this)">
+				<button class="in-page-nav-bar-button" id="btn_grafico_previsionale" onclick="getMascheraGraficoPrevisionale(this)">
 					<span>Grafico previsionale</span>
                     <i class="fa-duotone fa-chart-mixed"></i>
                 </button>
