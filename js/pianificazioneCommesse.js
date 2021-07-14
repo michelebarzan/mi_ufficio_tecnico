@@ -21,6 +21,11 @@ var graficoPrevisionaleInitialProperties=
 var graficoPrevisionaleModificaMilestoness =true;
 var consistenzaTronconiCellWidth=180;
 var voci_aggiunte_troncone;
+var filtersGraficoTemporaleCommesse=[];
+var dataGraficoTemporaleCommesseObj;
+var chartGraficoTemporaleCommesse;
+var chartGraficoTemporaleCommesseWeekWidth;
+var chartGraficoTemporaleCommesseAllWeeks;
 
 window.addEventListener("load", async function(event)
 {
@@ -1267,7 +1272,7 @@ async function getMascheraDettagliMacroAttivita()
                 var select=document.createElement("select");
                 select.setAttribute("id","gestioneMacroAttivitaDurataMilestoneInizio"+troncone.id_troncone);
                 select.setAttribute("style","width:140px");
-                select.setAttribute("onchange","document.getElementById('gestioneMacroAttivitaDurataSaveButton"+troncone.id_troncone+"').style.backgroundColor='#DA6969'");
+                select.setAttribute("onchange","if(this.value=='add'){getPopupAggiungiMilestone(null,"+troncone.id_troncone+",'Inizio');this.value=''}document.getElementById('gestioneMacroAttivitaDurataSaveButton"+troncone.id_troncone+"').style.backgroundColor='#DA6969'");
                 var option=document.createElement("option");
                 option.setAttribute("value","");
                 option.innerHTML="";
@@ -1281,6 +1286,10 @@ async function getMascheraDettagliMacroAttivita()
                     option.innerHTML=milestone.nome + " - " + milestone.settimana + "/" + milestone.anno;
                     select.appendChild(option);
                 });
+                var option=document.createElement("option");
+                option.setAttribute("value","add");
+                option.innerHTML="Nuova milestone...";
+                select.appendChild(option);
                 row.appendChild(select);
 
                 tronconeInnerContainer.appendChild(row);
@@ -1337,7 +1346,7 @@ async function getMascheraDettagliMacroAttivita()
                 var select=document.createElement("select");
                 select.setAttribute("id","gestioneMacroAttivitaDurataMilestoneFine"+troncone.id_troncone);
                 select.setAttribute("style","width:140px");
-                select.setAttribute("onchange","document.getElementById('gestioneMacroAttivitaDurataSaveButton"+troncone.id_troncone+"').style.backgroundColor='#DA6969'");
+                select.setAttribute("onchange","if(this.value=='add'){getPopupAggiungiMilestone(null,"+troncone.id_troncone+",'Fine');this.value=''}document.getElementById('gestioneMacroAttivitaDurataSaveButton"+troncone.id_troncone+"').style.backgroundColor='#DA6969'");
                 var option=document.createElement("option");
                 option.setAttribute("value","");
                 option.innerHTML="";
@@ -1351,6 +1360,11 @@ async function getMascheraDettagliMacroAttivita()
                     option.innerHTML=milestone.nome + " - " + milestone.settimana + "/" + milestone.anno;
                     select.appendChild(option);
                 });
+                var option=document.createElement("option");
+                option.setAttribute("value","add");
+                option.innerHTML="Nuova milestone...";
+                select.appendChild(option);
+                row.appendChild(select);
                 row.appendChild(select);
 
                 tronconeInnerContainer.appendChild(row);
@@ -2229,7 +2243,7 @@ async function getChartAndamento()
 }
 async function getMascheraGraficoPrevisionale(button)
 {
-    view="gestione_grafico_previsionale";
+    view="grafico_previsionale";
 
     $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
     button.style.borderBottomColor="#4C91CB";
@@ -3056,7 +3070,7 @@ async function renderChartGraficoPrevisionale()
     chartGraficoPrevisionale.options.axisX.stripLines=response.filteredStripLinesGraficoPrevisionaleObj;
     chartGraficoPrevisionale.render();
 }
-async function getPopupAggiungiMilestone(settimana)
+async function getPopupAggiungiMilestone(settimana,id_troncone,inizio_fine)
 {
     Swal.fire
     ({
@@ -3090,7 +3104,25 @@ async function getPopupAggiungiMilestone(settimana)
     select.setAttribute("class","dark-popup-select");
     select.setAttribute("id","popupAggiungiMilestoneTroncone");
     select.setAttribute("onchange","getSelectMilestonePrincipalePopupAggiungiMilestone(this.value,'"+JSONtronconi+"')");
-    if(filtersGraficoPrevisionale.tronconi.length==1)
+    tronconi.forEach(troncone =>
+    {
+        var option=document.createElement("option");
+        option.setAttribute("value",troncone.id_troncone);
+        if(id_troncone==undefined)
+        {
+            if(filtersGraficoPrevisionale.tronconi.length==1 && filtersGraficoPrevisionale.tronconi[0]==troncone.id_troncone)
+                option.setAttribute("selected","selected");
+        }
+        else
+        {
+            if(id_troncone==troncone.id_troncone)
+                option.setAttribute("selected","selected");
+        }
+        option.innerHTML=troncone.nome_troncone;
+        select.appendChild(option);
+    });
+
+    /*if(filtersGraficoPrevisionale.tronconi.length==1)
     {
         var troncone=getFirstObjByPropValue(tronconi,"id_troncone",filtersGraficoPrevisionale.tronconi[0]);
         var option=document.createElement("option");
@@ -3108,7 +3140,7 @@ async function getPopupAggiungiMilestone(settimana)
             option.innerHTML=troncone.nome_troncone;
             select.appendChild(option);
         });
-    }
+    }*/
     
     row.appendChild(select);
 
@@ -3134,7 +3166,7 @@ async function getPopupAggiungiMilestone(settimana)
     row.setAttribute("style","width:100%;color:#ddd;font-size: 12px;text-align:left;font-weight: normal;font-family: 'Montserrat',sans-serif;margin-bottom:5px;");
     var select=document.createElement("select");
     select.setAttribute("id","popupAggiungiMilestoneTipoCalcoloSettimane");
-    if(settimana!=undefined)
+    if(settimana!=undefined && settimana!=null)
         select.setAttribute("onchange","getInputTipoCalcoloSettimanePopupAggiungiMilestone(this.value,'"+settimana+"')");
     else
         select.setAttribute("onchange","getInputTipoCalcoloSettimanePopupAggiungiMilestone(this.value)");
@@ -3144,7 +3176,7 @@ async function getPopupAggiungiMilestone(settimana)
     select.appendChild(option);
     var option=document.createElement("option");
     option.setAttribute("value","settimana_specifica");
-    if(settimana!=undefined)
+    if(settimana!=undefined && settimana!=null)
         option.setAttribute("selected","selected");
     option.innerHTML="Settimana specifica";
     select.appendChild(option);
@@ -3197,7 +3229,10 @@ async function getPopupAggiungiMilestone(settimana)
     var confirmButton=document.createElement("button");
     confirmButton.setAttribute("class","dark-popup-button");
     confirmButton.setAttribute("style","width:100%");
-    confirmButton.setAttribute("onclick","aggiungiMilestoneSettimana()");
+    if(inizio_fine!=undefined && inizio_fine!=null)
+        confirmButton.setAttribute("onclick","aggiungiMilestoneSettimana('"+inizio_fine+"')");
+    else
+        confirmButton.setAttribute("onclick","aggiungiMilestoneSettimana()");
     confirmButton.innerHTML='<span>Conferma</span><i class="fal fa-check-circle"></i>';
     row.appendChild(confirmButton);
 
@@ -3240,8 +3275,9 @@ async function getPopupAggiungiMilestone(settimana)
                 }
     });
 }
-async function aggiungiMilestoneSettimana()
+async function aggiungiMilestoneSettimana(inizio_fine)
 {
+    var id_troncone=document.getElementById("popupAggiungiMilestoneTroncone").value;
     var tipo_calcolo_settimane=document.getElementById("popupAggiungiMilestoneTipoCalcoloSettimane").value;
     if(tipo_calcolo_settimane=="settimane_da")
     {
@@ -3320,9 +3356,32 @@ async function aggiungiMilestoneSettimana()
             }
             else
             {
+                var milestone=JSON.parse(response);
+
                 Swal.close();
             
-                renderChartGraficoPrevisionale();
+                if(view=="grafico_previsionale")
+                    renderChartGraficoPrevisionale();
+                else
+                {
+                    var select1=document.getElementById("gestioneMacroAttivitaDurataMilestoneInizio"+id_troncone);
+                    
+                    var option=document.createElement("option");
+                    option.setAttribute("value",milestone.id_milestone);
+                    if(inizio_fine=="Inizio")
+                        option.setAttribute("selected","selected");
+                    option.innerHTML=milestone.nome + " - " + milestone.settimana + "/" + milestone.anno;
+                    select1.insertBefore(option, select1.lastChild); 
+
+                    var select2=document.getElementById("gestioneMacroAttivitaDurataMilestoneFine"+id_troncone);
+                    
+                    var option=document.createElement("option");
+                    option.setAttribute("value",milestone.id_milestone);
+                    if(inizio_fine=="Fine")
+                        option.setAttribute("selected","selected");
+                    option.innerHTML=milestone.nome + " - " + milestone.settimana + "/" + milestone.anno;
+                    select2.insertBefore(option, select2.lastChild); 
+                }
             }
         }
         else
@@ -3335,9 +3394,32 @@ async function aggiungiMilestoneSettimana()
             }
             else
             {
+                var milestone=JSON.parse(response);
+
                 Swal.close();
     
-                renderChartGraficoPrevisionale();
+                if(view=="grafico_previsionale")
+                    renderChartGraficoPrevisionale();
+                else
+                {
+                    var select1=document.getElementById("gestioneMacroAttivitaDurataMilestoneInizio"+id_troncone);
+                    
+                    var option=document.createElement("option");
+                    option.setAttribute("value",milestone.id_milestone);
+                    if(inizio_fine=="Inizio")
+                        option.setAttribute("selected","selected");
+                    option.innerHTML=milestone.nome + " - " + milestone.settimana + "/" + milestone.anno;
+                    select1.insertBefore(option, select1.lastChild); 
+
+                    var select2=document.getElementById("gestioneMacroAttivitaDurataMilestoneFine"+id_troncone);
+                    
+                    var option=document.createElement("option");
+                    option.setAttribute("value",milestone.id_milestone);
+                    if(inizio_fine=="Fine")
+                        option.setAttribute("selected","selected");
+                    option.innerHTML=milestone.nome + " - " + milestone.settimana + "/" + milestone.anno;
+                    select2.insertBefore(option, select2.lastChild); 
+                }
             }
         }
     }
@@ -3426,7 +3508,7 @@ async function runModificaSettimanaMilestonePrincipale(id_milestone_principale,p
 {
     if(point==undefined)
         renderChartGraficoPrevisionale();
-        else
+    else
     {
         var anno=point.label.split("_")[0];
         var settimana=point.label.split("_")[1];
@@ -3643,6 +3725,35 @@ function getSettimane()
         });
     });
 }
+function getAnniMesiSettimaneLunedi()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.get("getAnniMesiSettimaneLunedi.php",
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
+}
 function getPopupGestioneMilestones(id_milestone)
 {
     var outerContainer=document.createElement("div");
@@ -3711,7 +3822,7 @@ async function getHotAnagraficaMilestones(table,containerId,id_milestone)
                 dropdownMenu: true,
                 headerTooltips: true,
                 language: 'it-IT',
-                contextMenu: true,
+                contextMenu: false,
                 width:"100%",
                 columnSorting: true,
                 height,
@@ -4271,7 +4382,22 @@ async function getMascheraConsistenzaTronconi()
 }
 function modificaMilestonePrincipaleTroncone(select,nome,id_troncone)
 {
-    
+    var anno_settimana=select.value;
+    var anno=anno_settimana.split("_")[0];
+    var settimana=anno_settimana.split("_")[1];
+
+    $.post("modificaMilestonePrincipaleTroncone.php",{anno,settimana,nome,id_troncone},
+    function(response, status)
+    {
+        if(status=="success")
+        {
+            if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+            {
+                Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                console.log(response);
+            }
+        }
+    });
 }
 async function modificaNomeTroncone(input,oldValue,id_troncone)
 {
@@ -5657,3 +5783,871 @@ function aggiornaColoreCommessa(id_commessa,color)
     });
 }
 /*---------------------------------------------------------*/
+async function getMascheraGraficoTemporaleCommesse(button)
+{
+    view="grafico_temporale_commesse";
+
+    $(".in-page-nav-bar-button").css({"border-bottom-color":"","font-weight":""});
+    button.style.borderBottomColor="#4C91CB";
+    button.style.fontWeight="bold";
+
+    document.getElementById("actionBarPianificazioneCommesse").style.display="";
+    document.getElementById("actionBarPianificazioneCommesse").innerHTML="";
+
+    resetContainerStyle();
+    clearViewIntervals();
+
+    document.getElementById("pianificazioneCommesseContainer").style.display="";
+    document.getElementById("pianificazioneCommesseContainer").innerHTML="";
+    
+    document.getElementById("pianificazioneCommesseContainer").style.width="100%";
+    document.getElementById("pianificazioneCommesseContainer").style.overflow="hidden";
+    document.getElementById("pianificazioneCommesseContainer").style.minWidth="100%";
+    document.getElementById("pianificazioneCommesseContainer").style.maxWidth="100%";
+    document.getElementById("pianificazioneCommesseContainer").style.width="100%";
+    document.getElementById("pianificazioneCommesseContainer").style.marginLeft="0px";
+    document.getElementById("pianificazioneCommesseContainer").style.marginRight="0px";
+    /*document.getElementById("pianificazioneCommesseContainer").style.height="calc(100% - 250px)";
+    document.getElementById("pianificazioneCommesseContainer").style.maxHeight="calc(100% - 250px)";
+    document.getElementById("pianificazioneCommesseContainer").style.minHeight="calc(100% - 250px)";*/
+    document.getElementById("pianificazioneCommesseContainer").style.marginTop="0px";
+    document.getElementById("pianificazioneCommesseContainer").style.marginBottom="0px";
+    document.getElementById("pianificazioneCommesseContainer").style.flexDirection="column";
+    document.getElementById("pianificazioneCommesseContainer").style.alignItems="flex-start";
+    document.getElementById("pianificazioneCommesseContainer").style.justifyContent="flex-start";
+
+    var cookie_chartGraficoTemporaleCommesseWeekWidth=await getCookie("chartGraficoTemporaleCommesseWeekWidth");
+    if(cookie_chartGraficoTemporaleCommesseWeekWidth!=null && cookie_chartGraficoTemporaleCommesseWeekWidth!="")
+        chartGraficoTemporaleCommesseWeekWidth=cookie_chartGraficoTemporaleCommesseWeekWidth;        
+
+    var actionBar=document.getElementById("actionBarPianificazioneCommesse");
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("onclick","");
+    var span=document.createElement("span");
+    span.innerHTML="Esporta";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-file-excel");
+    button.appendChild(i);
+    actionBar.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("onclick","");
+    var span=document.createElement("span");
+    span.innerHTML="Esporta";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fad fa-image");
+    button.appendChild(i);
+    actionBar.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("onclick","chartGraficoTemporaleCommesse.week_width+=5;chartGraficoTemporaleCommesse.render();setCookie('chartGraficoTemporaleCommesseWeekWidth',chartGraficoTemporaleCommesse.week_width)");
+    var span=document.createElement("span");
+    span.innerHTML="Zoom";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fa-solid fa-magnifying-glass-plus");
+    button.appendChild(i);
+    actionBar.appendChild(button);
+
+    var button=document.createElement("button");
+    button.setAttribute("class","rcb-button-text-icon");
+    button.setAttribute("onclick","if(chartGraficoTemporaleCommesse.week_width>5){chartGraficoTemporaleCommesse.week_width-=5;chartGraficoTemporaleCommesse.render();setCookie('chartGraficoTemporaleCommesseWeekWidth',chartGraficoTemporaleCommesse.week_width)}");
+    var span=document.createElement("span");
+    span.innerHTML="Zoom";
+    button.appendChild(span);
+    var i=document.createElement("i");
+    i.setAttribute("class","fa-solid fa-magnifying-glass-minus");
+    button.appendChild(i);
+    actionBar.appendChild(button);
+    
+    var graficoTemporaleCommesseFilterContainer=document.createElement("div");
+    graficoTemporaleCommesseFilterContainer.setAttribute("id","graficoTemporaleCommesseFilterContainer");
+    graficoTemporaleCommesseFilterContainer.setAttribute("class","grafico-temporale-commesse-filter-container");
+
+    var cookie_filtersGraficoTemporaleCommesse=await getCookie("filtersGraficoTemporaleCommesse");
+    if(cookie_filtersGraficoTemporaleCommesse!=null && cookie_filtersGraficoTemporaleCommesse!="")
+        filtersGraficoTemporaleCommesse=JSON.parse(cookie_filtersGraficoTemporaleCommesse);
+
+    var row=document.createElement("div");
+    row.setAttribute("class","grafico-temporale-commesse-filter-row");
+
+    var i=1;
+    var commesse=await getCommesse();
+    for (let index = 0; index < commesse.length; index++)
+    {
+        const commessa = commesse[index];
+
+        var tronconi=await getTronconi(commessa.id_commessa);
+        tronconi.forEach(troncone =>
+        {
+            var button=document.createElement("button");
+            if(filtersGraficoTemporaleCommesse.includes(troncone.id_troncone))
+            {
+                button.setAttribute("style","color:white;background-color:"+troncone.color);
+                button.setAttribute("active","true");
+            }
+            else
+                button.setAttribute("active","false");
+            button.setAttribute("active_color",troncone.color);
+            button.setAttribute("array","tronconi");
+            button.setAttribute("class","grafico-temporale-commesse-filter-button grafico-temporale-commesse-filter-commessa");
+            button.setAttribute("id_troncone",troncone.id_troncone);
+            button.setAttribute("onclick","toggleFilterGraficoTemporaleCommesse(this,'id_troncone')");
+            var span=document.createElement("span");
+            span.innerHTML=troncone.nome;
+            button.appendChild(span);
+            row.appendChild(button);
+
+            i++;
+        });
+    }
+
+    graficoTemporaleCommesseFilterContainer.appendChild(row);
+
+    document.getElementById("pianificazioneCommesseContainer").appendChild(graficoTemporaleCommesseFilterContainer);
+
+    var graficoTemporaleCommesseChartContainer=document.createElement("div");
+    graficoTemporaleCommesseChartContainer.setAttribute("id","graficoTemporaleCommesseChartContainer");
+    graficoTemporaleCommesseChartContainer.setAttribute("class","grafico-temporale-commesse-chart-container");
+    document.getElementById("pianificazioneCommesseContainer").appendChild(graficoTemporaleCommesseChartContainer);
+
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    dataGraficoTemporaleCommesseObj=await getDataGraficoTemporaleCommesse();
+    chartGraficoTemporaleCommesseAllWeeks=await getAnniMesiSettimaneLunedi();
+
+    Swal.close();
+
+    var response=filterGraficoTemporaleCommesse();
+    getChartGraficoTemporaleCommesse(response);
+}
+function filterGraficoTemporaleCommesse()
+{
+    return dataGraficoTemporaleCommesseObj.data;
+}
+function getDataGraficoTemporaleCommesse()
+{
+    return new Promise(function (resolve, reject) 
+    {
+        $.get("getDataGraficoTemporaleCommessePianificazioneCommesse.php",
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+                {
+                    Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                    console.log(response);
+                    resolve([]);
+                }
+                else
+                {
+                    try {
+                        resolve(JSON.parse(response));
+                    } catch (error) {
+                        Swal.fire({icon:"error",title: "Errore. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+                        console.log(response);
+                        resolve([]);
+                    }
+                }
+            }
+        });
+    });
+}
+function getChartGraficoTemporaleCommesse(data)
+{
+    chartGraficoTemporaleCommesse = new ChartGraficoTemporaleCommesse
+    (
+        "graficoTemporaleCommesseChartContainer",
+        data,
+        chartGraficoTemporaleCommesseWeekWidth,
+        chartGraficoTemporaleCommesseAllWeeks,
+        runModificaMilestonesPrincipaliTroncone,
+        runModificaMilestonesPrincipaliTroncone
+    );
+    chartGraficoTemporaleCommesse.render();
+}
+// Constructor
+function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks, afterUpdateItemContainer, afterUpdateDot)
+{
+    var self = this;
+    this.container_id = container_id;
+    this.data = data;
+    this.container = document.getElementById(container_id);
+    this.weeks = [];
+    this.months = [];
+    this.years = [];
+    if(all_weeks==undefined || all_weeks==null || all_weeks.constructor !== Array)
+        all_weeks=[];
+    this.all_weeks = all_weeks;
+    this.dot_diameter = 10;
+    week_width=parseInt(week_width);
+    if(week_width==undefined || week_width==null || week_width<5 || isNaN(week_width))
+        week_width=30;
+    this.week_width = week_width;
+    this.chart_item_height = 30;
+    this.id_troncone_item_selected = null;
+    this.client_x_item_selected = null;
+    this.id_troncone_dot_selected = null;
+    this.nome_dot_selected = null;
+    this.client_x_dot_selected = null;
+    this.element_dot_selected = null;
+
+    this.selectYearContainerWeekButton = function(week)
+    {
+        $("#chartVerticalLine"+week).css({"background-color":"#4C91CB","z-index":"3","opacity":"0.5"});
+        $("#yearContainerWeekButton"+week).css({"color":"#4C91CB","border-bottom":"2px solid #4C91CB","font-weight":"bold"});
+
+        var rect = document.getElementById("yearContainerWeekButton"+week).getBoundingClientRect();
+
+        var tooltip_outer_container=document.createElement("div");
+        tooltip_outer_container.setAttribute("class","year-container-week-button-tooltip-outer-container");
+        tooltip_outer_container.setAttribute("style","left:"+(rect.left-15+(this.week_width/2))+";top:"+(rect.top-36));
+        var div=document.createElement("div");
+        var span=document.createElement("span");
+        span.innerHTML=week.split("_")[1];
+        div.appendChild(span);
+        tooltip_outer_container.appendChild(div);
+        var i=document.createElement("i");
+        i.setAttribute("class","fa-solid fa-sort-down");
+        tooltip_outer_container.appendChild(i);
+        this.container.appendChild(tooltip_outer_container);
+    }
+    this.getMonthName = function(month_n)
+    {
+        month_n--;
+        var months_names=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+        return months_names[month_n];
+    }
+    this.getYearsWeeksMonths = function()
+    {
+        var data_weeks=[];
+        var data_years=[];
+
+        this.data.forEach(item =>
+        {
+            data_weeks.push(item["CONSEGNA"]);
+            data_weeks.push(item["IMPOSTAZIONE"]);
+            data_weeks.push(item["TAGLIO FERRO"]);
+            data_weeks.push(item["VARO"]);
+
+            data_years.push(item["CONSEGNA"].split("_")[0]);
+            data_years.push(item["IMPOSTAZIONE"].split("_")[0]);
+            data_years.push(item["TAGLIO FERRO"].split("_")[0]);
+            data_years.push(item["VARO"].split("_")[0]);
+        });
+
+        var unique_data_weeks = [];
+        $.each(data_weeks, function(i, el){if($.inArray(el, unique_data_weeks) === -1) unique_data_weeks.push(el);});
+        data_weeks=unique_data_weeks;
+
+        var unique_data_years = [];
+        $.each(data_years, function(i, el){if($.inArray(el, unique_data_years) === -1) unique_data_years.push(el);});
+        data_years=unique_data_years;
+
+        var help_data_weeks = [];
+        data_weeks.forEach(year_week_string =>
+        {
+            var year_string=year_week_string.split("_")[0];
+            var week_string=year_week_string.split("_")[1];
+
+            if(week_string.length==1)
+                week_string="0"+week_string.toString();
+
+            help_data_weeks.push(parseInt(year_string.toString()+week_string.toString()));
+        });
+
+        data_weeks=help_data_weeks;
+
+        var weeks_year=[];
+        this.all_weeks.forEach(week_obj =>
+        {
+            if(week_obj.year==Math.min.apply(null, data_years))
+                weeks_year.push(week_obj.week);
+        });
+        var first_week_year=Math.min.apply(null, weeks_year).toString();
+        if(first_week_year.length==1)
+            first_week_year="0"+first_week_year.toString();
+        var first_week=Math.min.apply(null, data_years)+first_week_year;
+
+        var weeks_year=[];
+        this.all_weeks.forEach(week_obj =>
+        {
+            if(week_obj.year==Math.max.apply(null, data_years))
+                weeks_year.push(week_obj.week);
+        });
+        var last_week_year=Math.max.apply(null, weeks_year).toString();
+        var last_week=Math.max.apply(null, data_years)+last_week_year;
+        
+        var weeks_int=[];
+        var week_int =first_week;
+        
+        while(week_int<=last_week)
+        {
+            weeks_int.push(week_int);
+            week_int++;
+        }
+
+        var years_string=[];
+        var weeks_string=[];
+        weeks_int.forEach(week_int =>
+        {
+            var year_week=week_int.toString();
+            var year=year_week.substring(0, 4);
+            var week=year_week.replace(year,"");
+
+            year=parseInt(year);
+            week=parseInt(week);
+
+            this.all_weeks.forEach(week_obj =>
+            {
+                if(week_obj.year_week==year+"_"+week)
+                    weeks_string.push(year+"_"+week);
+            });
+
+            years_string.push(year);
+        });
+
+        var unique_weeks_string = [];
+        $.each(weeks_string, function(i, el){if($.inArray(el, unique_weeks_string) === -1) unique_weeks_string.push(el);});
+        weeks_string=unique_weeks_string;
+
+        var unique_years_string = [];
+        $.each(years_string, function(i, el){if($.inArray(el, unique_years_string) === -1) unique_years_string.push(el);});
+        years_string=unique_years_string;
+
+        this.weeks=weeks_string;
+        this.years=years_string;
+    }
+    this.weekToInt = function(year_week_string)
+    {
+        var year_string=year_week_string.split("_")[0].toString();
+        var week_string=year_week_string.split("_")[1].toString();
+
+        if(week_string.length==1)
+            week_string="0"+week_string.toString();
+
+        return parseInt(year_string.toString()+week_string.toString());
+    }
+    this.render = function()
+    {
+        this.container.innerHTML="";
+
+        document.documentElement.style.setProperty('--week_width', this.week_width);
+
+
+        this.getTimeAxis();
+
+        this.getChart();
+
+        this.getVerticalLines();
+    }
+    this.getTimeAxis = function()
+    {
+        this.getYearsWeeksMonths();
+
+        var container=document.createElement("div");
+        container.setAttribute("class","time-axis-outer-container");
+
+        this.years.forEach(year =>
+        {
+            var added_months=[];
+
+            var year_container=document.createElement("div");
+            year_container.setAttribute("class","year-outer-container");
+
+            var row=document.createElement("div");
+            row.setAttribute("class","year-container-row");
+            row.setAttribute("style","align-items:center;justify-content:center;");
+
+            var button=document.createElement("button");
+            button.setAttribute("class","year-container-button year-container-year-button");
+            button.setAttribute("style","width:100%;");
+            var span=document.createElement("span");
+            span.innerHTML=year;
+            button.appendChild(span);
+            row.appendChild(button);
+
+            year_container.appendChild(row);
+
+            var row_weeks=document.createElement("div");
+            row_weeks.setAttribute("class","year-container-row");
+            row_weeks.setAttribute("style","flex-direction:row;align-items:center;justify-content:center");
+
+            var row_months=document.createElement("div");
+            row_months.setAttribute("class","year-container-row");
+            row_months.setAttribute("style","flex-direction:row;align-items:center;justify-content:center");
+
+            this.weeks.forEach(week =>
+            {
+                if(week.split("_")[0]==year)
+                {
+                    this.all_weeks.forEach(week_obj =>
+                    {
+                        if(week_obj.year_week==week)
+                        {
+                            if(!added_months.includes(week_obj.month))
+                            {
+                                var button=document.createElement("button");
+                                button.setAttribute("class","year-container-button year-container-month-button");
+                                button.setAttribute("id","yearContainerMonthButton"+week_obj.month);
+                                var width=0;
+                                this.all_weeks.forEach(week_obj_lcl =>
+                                {
+                                    if(week_obj_lcl.year==year && week_obj_lcl.month==week_obj.month)
+                                        width+=this.week_width;
+                                });
+                                button.setAttribute("style","min-width:"+width+"px;width:"+width+"px;max-width:"+width+"px;");
+                                var span=document.createElement("span");
+                                if(this.week_width>=20)
+                                    span.innerHTML=this.getMonthName(week_obj.month).toUpperCase();
+                                if(this.week_width>5 && this.week_width<20)
+                                    span.innerHTML=this.getMonthName(week_obj.month).toUpperCase().charAt(0);
+                                if(this.week_width<=5)
+                                    span.innerHTML=week_obj.month;
+                                button.appendChild(span);
+                                row_months.appendChild(button);
+
+                                added_months.push(week_obj.month);
+                            }
+                        }
+                    });
+
+                    var button=document.createElement("button");
+                    button.setAttribute("class","year-container-button year-container-week-button");
+                    button.setAttribute("id","yearContainerWeekButton"+week);
+                    button.setAttribute("style","min-width:"+this.week_width+"px;width:"+this.week_width+"px;max-width:"+this.week_width+"px;");
+                    button.setAttribute("week",week);
+                    button.setAttribute("title",week);
+                    if(this.week_width>=25)
+                    {
+                        var span=document.createElement("span");
+                        span.innerHTML=week.split("_")[1];
+                        button.appendChild(span);
+                    }
+                    row_weeks.appendChild(button);
+                }
+            });
+
+            year_container.appendChild(row_months);
+            year_container.appendChild(row_weeks);
+
+            container.appendChild(year_container);
+        });
+
+        this.container.appendChild(container);
+
+        $('.year-container-week-button').each(function(i, button)
+        {
+            button.addEventListener("click", function()
+            {
+                var week=button.getAttribute("week");
+
+                $('.chart-vertical-line').css({"background-color":"","z-index":"","opacity":""});
+                $(".year-container-week-button").css({"color":"","border-bottom":"","font-weight":""});
+                $(".year-container-week-button-tooltip-outer-container").remove();
+
+                self.selectYearContainerWeekButton(week);
+            });
+        });
+    }
+    this.getChart = function()
+    {
+        var container=document.createElement("div");
+        container.setAttribute("class","chart-inner-container");
+        container.setAttribute("style","height:"+this.data.length*this.chart_item_height+"px");
+        var i=0;
+        this.data.forEach(item =>
+        {
+            var top=i*this.chart_item_height;
+
+            var weeks_to_start=0;
+            this.weeks.forEach(week =>
+            {
+                if(this.weekToInt(week)<this.weekToInt(item["TAGLIO FERRO"]))
+                    weeks_to_start++;
+            });
+            
+            var weeks_taglio_ferro=0;
+            this.weeks.forEach(year_week_string =>
+            {
+                if(this.weekToInt(year_week_string)>this.weekToInt(item["TAGLIO FERRO"]) && this.weekToInt(year_week_string)<=this.weekToInt(item["IMPOSTAZIONE"]))
+                    weeks_taglio_ferro++;
+            });
+
+            var weeks_impostazione=0;
+            this.weeks.forEach(year_week_string =>
+            {
+                if(this.weekToInt(year_week_string)>this.weekToInt(item["IMPOSTAZIONE"]) && this.weekToInt(year_week_string)<=this.weekToInt(item["VARO"]))
+                    weeks_impostazione++;
+            });
+
+            var weeks_varo=0;
+            this.weeks.forEach(year_week_string =>
+            {
+                if(this.weekToInt(year_week_string)>this.weekToInt(item["VARO"]) && this.weekToInt(year_week_string)<=this.weekToInt(item["CONSEGNA"]))
+                    weeks_varo++;
+            });
+
+            var item_container=document.createElement("div");
+            item_container.setAttribute("class","chart-item-container chart-item-container"+item.id_troncone);
+            item_container.setAttribute("id_troncone",item.id_troncone);
+            item_container.setAttribute("actual_left",this.week_width*weeks_to_start);
+            item_container.setAttribute("initial_left",this.week_width*weeks_to_start);
+            item_container.setAttribute("style","left:"+this.week_width*weeks_to_start+"px;top:"+top+"px");
+
+            var item_dot=document.createElement("div");
+            item_dot.setAttribute("class","chart-item-dot chart-item-dot"+item.id_troncone+" chart-item-dot-taglio_ferro"+item.id_troncone);
+            item_dot.setAttribute("title","TAGLIO FERRO - "+item['TAGLIO FERRO']);
+            item_dot.setAttribute("nome","TAGLIO FERRO");
+            item_dot.setAttribute("id_troncone",item.id_troncone);
+            item_dot.setAttribute("actual_left",((this.week_width*weeks_to_start)));
+            item_dot.setAttribute("initial_left",((this.week_width*weeks_to_start)));
+            item_dot.setAttribute("style","-webkit-box-shadow: 0px 0px 0px 2px "+item.color+"; box-shadow: 0px 0px 0px 2px"+item.color+";background-color:"+item.color+";left:"+((this.week_width*weeks_to_start))+"px;top:"+(top+(this.chart_item_height/2))+"px");
+            container.appendChild(item_dot);
+
+            var item_line=document.createElement("div");
+            item_line.setAttribute("class","chart-item-line chart-item-line"+item.id_troncone+" chart-item-line-first"+item.id_troncone);
+            item_line.setAttribute("style","background-color:"+item.color+";width:"+this.week_width*weeks_taglio_ferro+"px;");
+            item_container.appendChild(item_line);
+
+            var item_dot=document.createElement("div");
+            item_dot.setAttribute("class","chart-item-dot chart-item-dot"+item.id_troncone+" chart-item-dot-impostazione"+item.id_troncone);
+            item_dot.setAttribute("title","IMPOSTAZIONE - "+item['IMPOSTAZIONE']);
+            item_dot.setAttribute("nome","IMPOSTAZIONE");
+            item_dot.setAttribute("id_troncone",item.id_troncone);
+            item_dot.setAttribute("actual_left",((this.week_width*weeks_to_start)+(this.week_width*weeks_taglio_ferro)));
+            item_dot.setAttribute("initial_left",((this.week_width*weeks_to_start)+(this.week_width*weeks_taglio_ferro)));
+            item_dot.setAttribute("style","-webkit-box-shadow: 0px 0px 0px 2px "+item.color+"; box-shadow: 0px 0px 0px 2px"+item.color+";background-color:"+item.color+";left:"+((this.week_width*weeks_to_start)+(this.week_width*weeks_taglio_ferro))+"px;top:"+(top+(this.chart_item_height/2))+"px");
+            container.appendChild(item_dot);
+
+            var item_rectangle=document.createElement("div");
+            item_rectangle.setAttribute("class","chart-item-rectangle chart-item-draggable chart-item-rectangle"+item.id_troncone);
+            item_rectangle.setAttribute("title",""+item.troncone);
+            item_rectangle.setAttribute("id_troncone",item.id_troncone);
+            item_rectangle.setAttribute("style","background-color:"+item.color+";width:"+this.week_width*weeks_impostazione+"px;");
+            var span=document.createElement("span");
+            span.setAttribute("class","chart-item-draggable");
+            span.setAttribute("id_troncone",item.id_troncone);
+            span.innerHTML=item.troncone;
+            item_rectangle.appendChild(span);
+            item_container.appendChild(item_rectangle);
+
+            var item_dot=document.createElement("div");
+            item_dot.setAttribute("class","chart-item-dot chart-item-dot"+item.id_troncone+" chart-item-dot-varo"+item.id_troncone);
+            item_dot.setAttribute("title","VARO - "+item['VARO']);
+            item_dot.setAttribute("nome","VARO");
+            item_dot.setAttribute("id_troncone",item.id_troncone);
+            item_dot.setAttribute("actual_left",((this.week_width*weeks_to_start)+(this.week_width*weeks_taglio_ferro)+(this.week_width*weeks_impostazione)));
+            item_dot.setAttribute("initial_left",((this.week_width*weeks_to_start)+(this.week_width*weeks_taglio_ferro)+(this.week_width*weeks_impostazione)));
+            item_dot.setAttribute("style","-webkit-box-shadow: 0px 0px 0px 2px "+item.color+"; box-shadow: 0px 0px 0px 2px"+item.color+";background-color:"+item.color+";left:"+((this.week_width*weeks_to_start)+(this.week_width*weeks_taglio_ferro)+(this.week_width*weeks_impostazione))+"px;top:"+(top+(this.chart_item_height/2))+"px");
+            container.appendChild(item_dot);
+
+            var item_line=document.createElement("div");
+            item_line.setAttribute("class","chart-item-line chart-item-line"+item.id_troncone+" chart-item-line-second"+item.id_troncone);
+            item_line.setAttribute("style","background-color:"+item.color+";width:"+this.week_width*weeks_varo+"px;");
+            item_container.appendChild(item_line);
+
+            var item_dot=document.createElement("div");
+            item_dot.setAttribute("class","chart-item-dot chart-item-dot"+item.id_troncone+" chart-item-dot-consegna"+item.id_troncone);
+            item_dot.setAttribute("title","CONSEGNA - "+item['CONSEGNA']);
+            item_dot.setAttribute("nome","CONSEGNA");
+            item_dot.setAttribute("id_troncone",item.id_troncone);
+            item_dot.setAttribute("actual_left",((this.week_width*weeks_to_start)+(this.week_width*weeks_taglio_ferro)+(this.week_width*weeks_impostazione)+(this.week_width*weeks_varo)));
+            item_dot.setAttribute("initial_left",((this.week_width*weeks_to_start)+(this.week_width*weeks_taglio_ferro)+(this.week_width*weeks_impostazione)+(this.week_width*weeks_varo)));
+            item_dot.setAttribute("style","-webkit-box-shadow: 0px 0px 0px 2px "+item.color+"; box-shadow: 0px 0px 0px 2px"+item.color+";background-color:"+item.color+";left:"+((this.week_width*weeks_to_start)+(this.week_width*weeks_taglio_ferro)+(this.week_width*weeks_impostazione)+(this.week_width*weeks_varo))+"px;top:"+(top+(this.chart_item_height/2))+"px");
+            container.appendChild(item_dot);
+
+            container.appendChild(item_container);
+
+            i++;
+        });
+
+        this.container.appendChild(container);
+
+        $('.chart-item-rectangle').each(function(i, rectangle)
+        {
+            var id_troncone=rectangle.getAttribute("id_troncone");
+            rectangle.addEventListener("mouseover", function()
+            {
+                if(self.id_troncone_item_selected==null)
+                {
+                    $(".chart-item-rectangle"+id_troncone).css({"opacity":"0.7"});
+                    $(".chart-item-line"+id_troncone).css({"opacity":"0.7"});
+                }
+            });
+            rectangle.addEventListener("mouseout", function()
+            {
+                if(self.id_troncone_item_selected==null)
+                {
+                    $(".chart-item-rectangle"+id_troncone).css({"opacity":""});
+                    $(".chart-item-line"+id_troncone).css({"opacity":""});
+                }
+            });
+        });
+
+        var week_width=this.week_width;
+        var weeks=this.weeks;
+        var container=this.container;
+        $(".chart-inner-container").on("mousedown", function(event)
+        {
+            if(event.target.className.indexOf("chart-item-draggable")>-1)
+            {
+                var id_troncone=event.target.getAttribute("id_troncone");
+                if(id_troncone!=null)
+                {
+                    self.id_troncone_item_selected=id_troncone;
+                    self.client_x_item_selected=event.clientX;
+
+                    $(".chart-item-rectangle"+self.id_troncone_item_selected).css({"opacity":"0.7"});
+                    $(".chart-item-line"+self.id_troncone_item_selected).css({"opacity":"0.7"});
+                }
+            }
+            if(event.target.className.indexOf("chart-item-dot")>-1)
+            {
+                var id_troncone=event.target.getAttribute("id_troncone");
+                var nome=event.target.getAttribute("nome");
+                if(id_troncone!=null && nome!=null)
+                {
+                    self.id_troncone_dot_selected=id_troncone;
+                    self.nome_dot_selected=nome;
+                    self.client_x_dot_selected=event.clientX;
+                    self.element_dot_selected=event.target;
+                }
+            }
+        });
+        $(".chart-inner-container").on("mousemove", function(event)
+        {
+            if(self.id_troncone_item_selected != null)
+            {
+                $('.chart-vertical-line').css({"background-color":"","z-index":"","opacity":""});
+                $(".year-container-week-button").css({"color":"","border-bottom":"","font-weight":""});    
+                $(".year-container-week-button-tooltip-outer-container").remove();
+
+                var client_x=event.clientX;
+
+                var client_x_item_selected=self.client_x_item_selected;
+
+                var actual_left_container=$(".chart-item-container"+self.id_troncone_item_selected).attr("actual_left");
+                var new_left_container= client_x - client_x_item_selected + parseInt(actual_left_container);
+
+                new_left_container=week_width*Math.round(new_left_container/week_width);
+
+                if(new_left_container>=0 && (new_left_container + $(".chart-item-container"+self.id_troncone_item_selected).outerWidth())<(weeks.length*week_width))
+                    $(".chart-item-container"+self.id_troncone_item_selected).css({"left":new_left_container+"px"});
+
+                $('.chart-item-dot'+self.id_troncone_item_selected).each(function(i, dot)
+                {
+                    var actual_left_dot=$(dot).attr("actual_left");
+                    var new_left_dot= client_x - client_x_item_selected + parseInt(actual_left_dot);
+
+                    new_left_dot=week_width*Math.round(new_left_dot/week_width);
+
+                    if(new_left_container>=0 && (new_left_container + $(".chart-item-container"+self.id_troncone_item_selected).outerWidth())<(weeks.length*week_width))
+                        $(dot).css({"left":new_left_dot+"px"});
+
+                    self.selectYearContainerWeekButton(weeks[($(dot).css("left").replace("px","")/week_width)]);
+                });
+            }
+            if(self.id_troncone_dot_selected != null && self.nome_dot_selected != null)
+            {
+                $('.chart-vertical-line').css({"background-color":"","z-index":"","opacity":""});
+                $(".year-container-week-button").css({"color":"","border-bottom":"","font-weight":""});
+                $(".year-container-week-button-tooltip-outer-container").remove();
+
+                var client_x=event.clientX;
+
+                var client_x_dot_selected=self.client_x_dot_selected;
+
+                var actual_left_dot=$(self.element_dot_selected).attr("actual_left");
+                var new_left_dot= client_x - client_x_dot_selected + parseInt(actual_left_dot);
+
+                new_left_dot=week_width*Math.round(new_left_dot/week_width);
+
+                if(new_left_dot>=0 && new_left_dot<(weeks.length*week_width))
+                {
+                    var move=false;
+                    switch (self.nome_dot_selected)
+                    {
+                        case "TAGLIO FERRO":
+                            if(new_left_dot<$(".chart-item-dot-impostazione"+self.id_troncone_dot_selected).attr("actual_left"))
+                                move=true;
+                        break;
+                        case "IMPOSTAZIONE":
+                            if(new_left_dot<$(".chart-item-dot-varo"+self.id_troncone_dot_selected).attr("actual_left") & new_left_dot>$(".chart-item-dot-taglio_ferro"+self.id_troncone_dot_selected).attr("actual_left"))
+                                move=true;
+                        break;
+                        case "VARO":
+                            if(new_left_dot<$(".chart-item-dot-consegna"+self.id_troncone_dot_selected).attr("actual_left") & new_left_dot>$(".chart-item-dot-impostazione"+self.id_troncone_dot_selected).attr("actual_left"))
+                                move=true;
+                        break;
+                        case "CONSEGNA":
+                            if(new_left_dot>$(".chart-item-dot-varo"+self.id_troncone_dot_selected).attr("actual_left"))
+                                move=true;
+                        break;
+                    }
+                    if(move)
+                    {
+                        $(self.element_dot_selected).css({"left":new_left_dot+"px"});
+                        switch (self.nome_dot_selected)
+                        {
+                            case "TAGLIO FERRO":
+                                $(".chart-item-container"+self.id_troncone_dot_selected).css({"left":new_left_dot+"px"});
+                                $(".chart-item-line-first"+self.id_troncone_dot_selected).width(parseInt($(".chart-item-dot-impostazione"+self.id_troncone_dot_selected).css("left").replace("px",""))-parseInt($(".chart-item-dot-taglio_ferro"+self.id_troncone_dot_selected).css("left").replace("px","")));
+                            break;
+                            case "IMPOSTAZIONE":
+                                $(".chart-item-line-first"+self.id_troncone_dot_selected).width(parseInt($(".chart-item-dot-impostazione"+self.id_troncone_dot_selected).css("left").replace("px",""))-parseInt($(".chart-item-dot-taglio_ferro"+self.id_troncone_dot_selected).css("left").replace("px","")));
+                                $(".chart-item-rectangle"+self.id_troncone_dot_selected).width(parseInt($(".chart-item-dot-varo"+self.id_troncone_dot_selected).css("left").replace("px",""))-parseInt($(".chart-item-dot-impostazione"+self.id_troncone_dot_selected).css("left").replace("px","")));
+                            break;
+                            case "VARO":
+                                $(".chart-item-line-second"+self.id_troncone_dot_selected).width(parseInt($(".chart-item-dot-consegna"+self.id_troncone_dot_selected).css("left").replace("px",""))-parseInt($(".chart-item-dot-varo"+self.id_troncone_dot_selected).css("left").replace("px","")));
+                                $(".chart-item-rectangle"+self.id_troncone_dot_selected).width(parseInt($(".chart-item-dot-varo"+self.id_troncone_dot_selected).css("left").replace("px",""))-parseInt($(".chart-item-dot-impostazione"+self.id_troncone_dot_selected).css("left").replace("px","")));
+                            break;
+                            case "CONSEGNA":
+                                $(".chart-item-line-second"+self.id_troncone_dot_selected).width(parseInt($(".chart-item-dot-consegna"+self.id_troncone_dot_selected).css("left").replace("px",""))-parseInt($(".chart-item-dot-varo"+self.id_troncone_dot_selected).css("left").replace("px","")));
+                            break;
+                        }
+                        $(".chart-item-container"+self.id_troncone_dot_selected).width(parseInt($(".chart-item-dot-consegna"+self.id_troncone_dot_selected).css("left").replace("px",""))-parseInt($(".chart-item-dot-taglio_ferro"+self.id_troncone_dot_selected).css("left").replace("px","")));
+                    }
+                }
+
+                self.selectYearContainerWeekButton(weeks[($(self.element_dot_selected).css("left").replace("px","")/week_width)]);
+            }
+        });
+        $(".chart-inner-container").on("mouseup", function(event)
+        {
+            $('.chart-vertical-line').css({"background-color":"","z-index":"","opacity":""});
+            $(".year-container-week-button").css({"color":"","border-bottom":"","font-weight":""});
+            $(".year-container-week-button-tooltip-outer-container").remove();
+
+            if(self.id_troncone_item_selected != null)
+            {
+                $(".chart-item-container"+self.id_troncone_item_selected).attr("actual_left",$(".chart-item-container"+self.id_troncone_item_selected).css("left").replace("px",""));
+
+                var new_values={};
+                $('.chart-item-dot'+self.id_troncone_item_selected).each(function(i, dot)
+                {
+                    $(dot).attr("actual_left",$(dot).css("left").replace("px",""));
+
+                    new_values[$(dot).attr("nome")]=weeks[($(dot).css("left").replace("px","")/week_width)];
+                });
+
+                $(".chart-item-rectangle"+self.id_troncone_item_selected).css({"opacity":""});
+                $(".chart-item-line"+self.id_troncone_item_selected).css({"opacity":""});
+
+                try
+                {
+                    afterUpdateItemContainer(new_values,self.id_troncone_item_selected);
+                } catch (error) {}
+
+                self.id_troncone_item_selected=null;
+                self.client_x_item_selected=null;
+            }
+            if(self.id_troncone_dot_selected != null && self.nome_dot_selected != null)
+            {
+                $(".chart-item-container"+self.id_troncone_dot_selected).attr("actual_left",$(".chart-item-container"+self.id_troncone_dot_selected).css("left").replace("px",""));
+
+                $(self.element_dot_selected).attr("actual_left",$(self.element_dot_selected).css("left").replace("px",""));
+
+                var new_values={};
+                new_values[$(self.element_dot_selected).attr("nome")]=weeks[($(self.element_dot_selected).css("left").replace("px","")/week_width)];
+
+                try
+                {
+                    afterUpdateDot(new_values,self.id_troncone_dot_selected);
+                } catch (error) {}
+
+                self.id_troncone_dot_selected=null;
+                self.nome_dot_selected=null;
+                self.client_x_dot_selected=null;
+            }
+        });
+    }
+    this.getVerticalLines = function()
+    {
+        var container=this.container.getElementsByClassName("chart-inner-container")[0];
+
+        var i=0;
+        this.weeks.forEach(week =>
+        {
+            var line=document.createElement("div");
+            line.setAttribute("class","chart-vertical-line");
+            line.setAttribute("week",week);
+            line.setAttribute("id","chartVerticalLine"+week);
+            if(i==this.weeks.length-1)
+                line.setAttribute("style","border-right:1px solid #ddd;left:"+this.week_width*i+"px");
+            else
+                line.setAttribute("style","left:"+this.week_width*i+"px");
+            container.appendChild(line);
+            i++;
+        });
+    }
+}
+
+function modificaMilestonesPrincipaliTroncone(values,id_troncone)
+{
+    var JSONvalues=JSON.stringify(values);
+    return new Promise(function (resolve, reject) 
+    {
+        $.post("modificaMilestonesPrincipaliTroncone.php",{JSONvalues,id_troncone},
+        function(response, status)
+        {
+            if(status=="success")
+            {
+                resolve(response);
+            }
+        });
+    });
+}
+async function runModificaMilestonesPrincipaliTroncone(values,id_troncone)
+{
+    var response=await modificaMilestonesPrincipaliTroncone(values,id_troncone);
+    if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
+    {
+        console.log(response);
+
+        Swal.fire
+        ({
+            width:"100%",
+            background:"transparent",
+            title:"Caricamento in corso...",
+            html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+            allowOutsideClick:false,
+            showCloseButton:false,
+            showConfirmButton:false,
+            allowEscapeKey:false,
+            showCancelButton:false,
+            onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+        });
+    
+        dataGraficoTemporaleCommesseObj=await getDataGraficoTemporaleCommesse();
+    
+        var response=filterGraficoTemporaleCommesse();
+        getChartGraficoTemporaleCommesse(response);
+    
+        Swal.fire({icon:"error",title: "Errore. Impossibile salvare le modifiche. Se il problema persiste contatta l' amministratore",onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.color="gray";document.getElementsByClassName("swal2-title")[0].style.fontSize="14px";}});
+    }
+    else
+    {
+        dataGraficoTemporaleCommesseObj=await getDataGraficoTemporaleCommesse();
+        chartGraficoTemporaleCommesse.data=dataGraficoTemporaleCommesseObj.data;
+    }
+}

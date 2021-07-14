@@ -183,7 +183,10 @@
             array_push($totali,$totale);
         }
     }
+	
+	$arrayResponse["totali"]=$totali;
+	$arrayResponse["q"]=$q;
 
-    echo json_encode($totali);
+    echo json_encode($arrayResponse);
     
 ?>

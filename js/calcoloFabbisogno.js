@@ -3225,7 +3225,7 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
 
         var select=document.createElement("select");
         select.setAttribute("class","dark-popup-select");
-        select.setAttribute("id","select2xPopupNuovaRichiesta");
+        select.setAttribute("id","select1xPopupNuovaRichiesta");
         select.setAttribute("style","width:175px;margin-left:5px");
         select.setAttribute("onchange","if(this.value=='aggiungi'){Swal.close();getMascheraFormatiLamiere()}else{calcolaFormatiLamiera()}");
 
@@ -3239,7 +3239,7 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
 
         var input=document.createElement("input");
         input.setAttribute("type","number");
-        input.setAttribute("id","popupNuovaRichiestaFogli2");
+        input.setAttribute("id","popupNuovaRichiestaFogli1");
         input.setAttribute("class","dark-popup-input");
         input.setAttribute("style","width: 60px;margin-left:5px;");
         row.appendChild(input);
@@ -3274,7 +3274,7 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
 
         var select=document.createElement("select");
         select.setAttribute("class","dark-popup-select");
-        select.setAttribute("id","select1xPopupNuovaRichiesta");
+        select.setAttribute("id","select2xPopupNuovaRichiesta");
         select.setAttribute("style","width:175px;margin-left:5px");
         select.setAttribute("onchange","if(this.value=='aggiungi'){Swal.close();getMascheraFormatiLamiere()}else{calcolaFormatiLamiera()}");
 
@@ -3288,7 +3288,7 @@ async function getPopupRichiestaMateriale(id_richiesta,id_materiale)
 
         var input=document.createElement("input");
         input.setAttribute("type","number");
-        input.setAttribute("id","popupNuovaRichiestaFogli1");
+        input.setAttribute("id","popupNuovaRichiestaFogli2");
         input.setAttribute("class","dark-popup-input");
         input.setAttribute("style","width: 60px;margin-left:5px;");
         row.appendChild(input);
@@ -3620,10 +3620,15 @@ async function aggiungiMaterialeRichiesta(icon,id_richiesta)
     var qnt=parseFloat(document.getElementById("popupNuovaRichiestaQnt").value);
     var id_gruppo=document.getElementById("selectGruppoPopupNuovaRichiesta").value;
     
-    var id_formato_1=document.getElementById("select1xPopupNuovaRichiesta").value;
+    /*var id_formato_1=document.getElementById("select1xPopupNuovaRichiesta").value;
     var id_formato_2=document.getElementById("select2xPopupNuovaRichiesta").value;
     var fogli1=document.getElementById("popupNuovaRichiestaFogli1").value;
-    var fogli2=document.getElementById("popupNuovaRichiestaFogli2").value;
+    var fogli2=document.getElementById("popupNuovaRichiestaFogli2").value;*/
+
+    var id_formato_1=document.getElementById("select2xPopupNuovaRichiesta").value;
+    var id_formato_2=document.getElementById("select1xPopupNuovaRichiesta").value;
+    var fogli1=document.getElementById("popupNuovaRichiestaFogli2").value;
+    var fogli2=document.getElementById("popupNuovaRichiestaFogli1").value;
     
     var materialeObj=getFirstObjByPropValue(materiali,"id_materiale",materiale);
 
@@ -6166,7 +6171,10 @@ async function getStatisticheMateriali()
         }
         else
         {
-            var totaliMateriali=await getTotaliMateriali(id_commessa,materiali_statistiche,raggruppamentoMateriali);
+            var totaliMaterialiResponse=await getTotaliMateriali(id_commessa,materiali_statistiche,raggruppamentoMateriali);
+			var totaliMateriali=totaliMaterialiResponse.totali;
+			console.log(totaliMaterialiResponse.q);
+			
             totaliMateriali.forEach(totaleMateriale =>
             {
                 totaleMateriale.qnt=parseFloat(totaleMateriale.qnt.toFixed(2));

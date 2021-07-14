@@ -389,19 +389,18 @@
         //stripline
         $stripLine["color"]=$milestone["color_commessa"];
         $stripLine["thickness"]=5;
-        $stripLine["label"]=$milestone["nome"];
+        $stripLine["label"]=getNomeTroncone($milestone["troncone"],$tronconi).'   -   '.$milestone["nome"];
         $stripLine["labelFontFamily"]="'Montserrat',sans-serif";
-        $stripLine["labelFontColor"]="black";
+        $stripLine["labelFontWeight"]="normal";
+        $stripLine["labelFontSize"]=12;
+
         if($milestone["principale"])
         {
-            $stripLine["labelFontWeight"]="bold";
             $stripLine["labelBackgroundColor"]=$milestone["color_commessa"];
+            $stripLine["labelFontColor"]="white";
         }
         else
-        {
-            $stripLine["labelFontWeight"]="normal";
-        }
-        $stripLine["labelFontSize"]=12;
+            $stripLine["labelFontColor"]="black";
 
         $i=0;
         foreach ($x_values_string as $settimana)

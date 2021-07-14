@@ -8,7 +8,7 @@
     $tronconi=$_REQUEST["tronconi"];
     $n_tronconi=$_REQUEST["n_tronconi"];
 
-    $q="INSERT INTO [dbo].[anagrafica_commesse] ([nome],[descrizione]) VALUES('$nome','$descrizione')";
+    $q="INSERT INTO [dbo].[anagrafica_commesse] ([nome],[descrizione],color) VALUES('$nome','$descrizione','#000000')";
     $r=sqlsrv_query($conn,$q);
     if($r==FALSE)
     {
@@ -51,13 +51,13 @@
                     }
                 }
                 $q4="SELECT id_troncone
-                    FROM dbo.anagrafica_tronconi
-                    WHERE (id_troncone NOT IN (SELECT DISTINCT anagrafica_tronconi_1.id_troncone FROM dbo.milestones_principali INNER JOIN dbo.anagrafica_tronconi AS anagrafica_tronconi_1 ON dbo.milestones_principali.troncone = anagrafica_tronconi_1.id_troncone WHERE (anagrafica_tronconi_1.commessa = $id_commessa)))
+                    FROM [mi_pianificazione].dbo.anagrafica_tronconi
+                    WHERE (id_troncone NOT IN (SELECT DISTINCT anagrafica_tronconi_1.id_troncone FROM [mi_pianificazione].dbo.milestones_principali INNER JOIN [mi_pianificazione].dbo.anagrafica_tronconi AS anagrafica_tronconi_1 ON [mi_pianificazione].dbo.milestones_principali.troncone = anagrafica_tronconi_1.id_troncone WHERE (anagrafica_tronconi_1.commessa = $id_commessa)))
                     AND (commessa = $id_commessa)";
                 $r4=sqlsrv_query($conn,$q4);
                 if($r4==FALSE)
                 {
-                    die("error");
+                    die("error".$q4);
                 }
                 else
                 {

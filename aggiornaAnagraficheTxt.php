@@ -6,6 +6,8 @@
 	
 	$databases=["BeB","grimaldi","po00","spareti","newpan"];
 	
+	exec("inserisci_password.bat");
+	
 	foreach($databases as $database)
     {
 		if($database=="newpan")

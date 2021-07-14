@@ -142,7 +142,7 @@
 
     $consistenza_troncone["voci_2"]=$voci_2;
 
-    $q4="SELECT nome,settimana
+    $q4="SELECT nome,anno,settimana
         FROM dbo.milestones_principali
         WHERE (troncone = $id_troncone)";
     $r4=sqlsrv_query($conn,$q4);
@@ -154,7 +154,7 @@
     {
         while($row4=sqlsrv_fetch_array($r4))
         {
-            $consistenza_troncone[$row4["nome"]]=$row4["settimana"];
+            $consistenza_troncone[$row4["nome"]]=$row4["anno"].'_'.$row4["settimana"];
         }
     }
     

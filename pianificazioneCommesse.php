@@ -42,6 +42,10 @@
 					<span>Grafico previsionale</span>
                     <i class="fa-duotone fa-chart-mixed"></i>
                 </button>
+				<button class="in-page-nav-bar-button" id="btn_grafico_temporale_commesse" onclick="getMascheraGraficoTemporaleCommesse(this)">
+					<span>Grafico temporale commesse</span>
+                    <i class="fa-duotone fa-chart-gantt"></i>
+                </button>
 			</div>
 		</div>
 		<div class="reusable-control-bar" id="actionBarPianificazioneCommesse" style="display:none"></div>
