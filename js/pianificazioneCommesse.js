@@ -5824,7 +5824,7 @@ async function getMascheraGraficoTemporaleCommesse(button)
 
     var button=document.createElement("button");
     button.setAttribute("class","rcb-button-text-icon");
-    button.setAttribute("onclick","");
+    button.setAttribute("onclick","esportaExcelChartGraficoTemporaleCommesse()");
     var span=document.createElement("span");
     span.innerHTML="Esporta";
     button.appendChild(span);
@@ -5835,7 +5835,7 @@ async function getMascheraGraficoTemporaleCommesse(button)
 
     var button=document.createElement("button");
     button.setAttribute("class","rcb-button-text-icon");
-    button.setAttribute("onclick","");
+    button.setAttribute("onclick","esportaImmagineChartGraficoTemporaleCommesse()");
     var span=document.createElement("span");
     span.innerHTML="Esporta";
     button.appendChild(span);
@@ -5939,10 +5939,6 @@ async function getMascheraGraficoTemporaleCommesse(button)
     var response=filterGraficoTemporaleCommesse();
     getChartGraficoTemporaleCommesse(response);
 }
-function filterGraficoTemporaleCommesse()
-{
-    return dataGraficoTemporaleCommesseObj.data;
-}
 function getDataGraficoTemporaleCommesse()
 {
     return new Promise(function (resolve, reject) 
@@ -5975,34 +5971,29 @@ function getDataGraficoTemporaleCommesse()
 function getChartGraficoTemporaleCommesse(data)
 {
     chartGraficoTemporaleCommesse = new ChartGraficoTemporaleCommesse
-    (
-        "graficoTemporaleCommesseChartContainer",
+    ({
+        container_id:"graficoTemporaleCommesseChartContainer",
         data,
-        chartGraficoTemporaleCommesseWeekWidth,
-        chartGraficoTemporaleCommesseAllWeeks,
-        runModificaMilestonesPrincipaliTroncone,
-        runModificaMilestonesPrincipaliTroncone
-    );
+        week_width:chartGraficoTemporaleCommesseWeekWidth,
+        all_weeks:chartGraficoTemporaleCommesseAllWeeks,
+        afterContextMenuMove:runModificaMilestonesPrincipaliTroncone,
+        afterUpdateItemContainer:runModificaMilestonesPrincipaliTroncone,
+        afterUpdateDot:runModificaMilestonesPrincipaliTroncone
+    });
     chartGraficoTemporaleCommesse.render();
 }
-// Constructor
-function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks, afterUpdateItemContainer, afterUpdateDot)
+function ChartGraficoTemporaleCommesse(arguments)
 {
     var self = this;
-    this.container_id = container_id;
-    this.data = data;
-    this.container = document.getElementById(container_id);
+    this.container_id = arguments.container_id;
+    this.data = arguments.data;
+    this.container = document.getElementById(arguments.container_id);
     this.weeks = [];
     this.months = [];
     this.years = [];
-    if(all_weeks==undefined || all_weeks==null || all_weeks.constructor !== Array)
-        all_weeks=[];
-    this.all_weeks = all_weeks;
+    this.all_weeks = arguments.all_weeks;
     this.dot_diameter = 10;
-    week_width=parseInt(week_width);
-    if(week_width==undefined || week_width==null || week_width<5 || isNaN(week_width))
-        week_width=30;
-    this.week_width = week_width;
+    this.week_width = parseInt(arguments.week_width);
     this.chart_item_height = 30;
     this.id_troncone_item_selected = null;
     this.client_x_item_selected = null;
@@ -6010,6 +6001,10 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
     this.nome_dot_selected = null;
     this.client_x_dot_selected = null;
     this.element_dot_selected = null;
+
+    this.afterContextMenuMove = arguments.afterContextMenuMove;
+    this.afterUpdateItemContainer = arguments.afterUpdateItemContainer;
+    this.afterUpdateDot = arguments.afterUpdateDot;
 
     this.selectYearContainerWeekButton = function(week)
     {
@@ -6151,8 +6146,14 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
     {
         this.container.innerHTML="";
 
-        document.documentElement.style.setProperty('--week_width', this.week_width);
+        this.container.addEventListener("scroll", function()
+        {
+            $('.chart-vertical-line').css({"background-color":"","z-index":"","opacity":""});
+            $(".year-container-week-button").css({"color":"","border-bottom":"","font-weight":""});
+            $(".year-container-week-button-tooltip-outer-container").remove();
+        });
 
+        document.documentElement.style.setProperty('--week_width', this.week_width);
 
         this.getTimeAxis();
 
@@ -6326,7 +6327,7 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
 
             var item_line=document.createElement("div");
             item_line.setAttribute("class","chart-item-line chart-item-line"+item.id_troncone+" chart-item-line-first"+item.id_troncone);
-            item_line.setAttribute("style","background-color:"+item.color+";width:"+this.week_width*weeks_taglio_ferro+"px;");
+            item_line.setAttribute("style","background-color:"+item.color+";width:"+this.week_width*weeks_taglio_ferro+"px;height: 4px;");
             item_container.appendChild(item_line);
 
             var item_dot=document.createElement("div");
@@ -6343,10 +6344,13 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
             item_rectangle.setAttribute("class","chart-item-rectangle chart-item-draggable chart-item-rectangle"+item.id_troncone);
             item_rectangle.setAttribute("title",""+item.troncone);
             item_rectangle.setAttribute("id_troncone",item.id_troncone);
+            item_rectangle.setAttribute("nome",item.troncone);
             item_rectangle.setAttribute("style","background-color:"+item.color+";width:"+this.week_width*weeks_impostazione+"px;");
             var span=document.createElement("span");
             span.setAttribute("class","chart-item-draggable");
+            span.setAttribute("title",""+item.troncone);
             span.setAttribute("id_troncone",item.id_troncone);
+            span.setAttribute("nome",item.troncone);
             span.innerHTML=item.troncone;
             item_rectangle.appendChild(span);
             item_container.appendChild(item_rectangle);
@@ -6363,7 +6367,7 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
 
             var item_line=document.createElement("div");
             item_line.setAttribute("class","chart-item-line chart-item-line"+item.id_troncone+" chart-item-line-second"+item.id_troncone);
-            item_line.setAttribute("style","background-color:"+item.color+";width:"+this.week_width*weeks_varo+"px;");
+            item_line.setAttribute("style","background-color:"+item.color+";width:"+this.week_width*weeks_varo+"px;height: 8px;");
             item_container.appendChild(item_line);
 
             var item_dot=document.createElement("div");
@@ -6407,30 +6411,284 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
         var week_width=this.week_width;
         var weeks=this.weeks;
         var container=this.container;
-        $(".chart-inner-container").on("mousedown", function(event)
+        $(".chart-inner-container").on("contextmenu", function(event)
         {
-            if(event.target.className.indexOf("chart-item-draggable")>-1)
+            event.preventDefault();
+            if(event.target.className.indexOf("chart-item-draggable")>-1 || event.target.className.indexOf("chart-item-dot")>-1)
             {
                 var id_troncone=event.target.getAttribute("id_troncone");
                 if(id_troncone!=null)
                 {
-                    self.id_troncone_item_selected=id_troncone;
-                    self.client_x_item_selected=event.clientX;
+                    var dots=[];
+                    if(event.target.className.indexOf("chart-item-draggable")>-1)
+                    {
+                        var context_menu_button_label=event.target.getAttribute("nome");
 
-                    $(".chart-item-rectangle"+self.id_troncone_item_selected).css({"opacity":"0.7"});
-                    $(".chart-item-line"+self.id_troncone_item_selected).css({"opacity":"0.7"});
+                        var dot=
+                        {
+                            nome:"TAGLIO FERRO",
+                            left:parseInt($(".chart-item-dot-taglio_ferro"+id_troncone).attr("actual_left"))
+                        }
+                        dots.push(dot);
+
+                        var dot=
+                        {
+                            nome:"IMPOSTAZIONE",
+                            left:parseInt($(".chart-item-dot-impostazione"+id_troncone).attr("actual_left"))
+                        }
+                        dots.push(dot);
+
+                        var dot=
+                        {
+                            nome:"VARO",
+                            left:parseInt($(".chart-item-dot-varo"+id_troncone).attr("actual_left"))
+                        }
+                        dots.push(dot);
+
+                        var dot=
+                        {
+                            nome:"CONSEGNA",
+                            left:parseInt($(".chart-item-dot-consegna"+id_troncone).attr("actual_left"))
+                        }
+                        dots.push(dot);
+                    }
+                    if(event.target.className.indexOf("chart-item-dot")>-1)
+                    {
+                        var context_menu_button_label=event.target.getAttribute("nome");
+
+                        switch (event.target.getAttribute("nome"))
+                        {
+                            case "TAGLIO FERRO":
+                                var dot=
+                                {
+                                    nome:"TAGLIO FERRO",
+                                    left:parseInt($(".chart-item-dot-taglio_ferro"+id_troncone).attr("actual_left"))
+                                }
+                                dots.push(dot);
+                            break;
+                            case "IMPOSTAZIONE":
+                                var dot=
+                                {
+                                    nome:"IMPOSTAZIONE",
+                                    left:parseInt($(".chart-item-dot-impostazione"+id_troncone).attr("actual_left"))
+                                }
+                                dots.push(dot);
+                            break;
+                            case "VARO":
+                                var dot=
+                                {
+                                    nome:"VARO",
+                                    left:parseInt($(".chart-item-dot-varo"+id_troncone).attr("actual_left"))
+                                }
+                                dots.push(dot);
+                            break;
+                            case "CONSEGNA":
+                                var dot=
+                                {
+                                    nome:"CONSEGNA",
+                                    left:parseInt($(".chart-item-dot-consegna"+id_troncone).attr("actual_left"))
+                                }
+                                dots.push(dot);
+                            break;
+                        }
+                    }
+
+                    var outerContainer=document.createElement("div");
+                    outerContainer.setAttribute("class","context-menu-grafico-temporale-commesse-outer-container");
+
+                    var button=document.createElement("button");
+                    button.setAttribute("class","context-menu-grafico-temporale-commesse-button");
+                    button.setAttribute("id_troncone",id_troncone);
+                    button.setAttribute("operator","+");
+                    button.setAttribute("quantity","1");
+                    button.setAttribute("dots",JSON.stringify(dots));
+                    var span=document.createElement("span");
+                    span.innerHTML=`Sposta ${context_menu_button_label} avanti di una settimana`;
+                    button.appendChild(span);
+                    outerContainer.appendChild(button);
+
+                    var button=document.createElement("button");
+                    button.setAttribute("class","context-menu-grafico-temporale-commesse-button");
+                    button.setAttribute("id_troncone",id_troncone);
+                    button.setAttribute("operator","-");
+                    button.setAttribute("quantity","1");
+                    button.setAttribute("dots",JSON.stringify(dots));
+                    var span=document.createElement("span");
+                    span.innerHTML=`Sposta ${context_menu_button_label} indietro di una settimana`;
+                    button.appendChild(span);
+                    outerContainer.appendChild(button);
+
+                    var button=document.createElement("button");
+                    button.setAttribute("class","context-menu-grafico-temporale-commesse-button");
+                    button.setAttribute("id_troncone",id_troncone);
+                    button.setAttribute("operator","+");
+                    button.setAttribute("quantity","5");
+                    button.setAttribute("dots",JSON.stringify(dots));
+                    var span=document.createElement("span");
+                    span.innerHTML=`Sposta ${context_menu_button_label} avanti di 5 settimane`;
+                    button.appendChild(span);
+                    outerContainer.appendChild(button);
+                    
+                    var button=document.createElement("button");
+                    button.setAttribute("class","context-menu-grafico-temporale-commesse-button");
+                    button.setAttribute("style","border-bottom:1px solid transparent");
+                    button.setAttribute("id_troncone",id_troncone);
+                    button.setAttribute("operator","-");
+                    button.setAttribute("quantity","5");
+                    button.setAttribute("dots",JSON.stringify(dots));
+                    var span=document.createElement("span");
+                    span.innerHTML=`Sposta ${context_menu_button_label} indietro di 5 settimane`;
+                    button.appendChild(span);
+                    outerContainer.appendChild(button);
+
+                    Swal.fire
+                    ({
+                        background:"transparent",
+                        html:outerContainer.outerHTML,
+                        allowOutsideClick:true,
+                        showCloseButton:false,
+                        showConfirmButton:false,
+                        allowEscapeKey:true,
+                        showCancelButton:false,
+                        onOpen : function()
+                                {
+                                    document.getElementsByClassName("swal2-title")[0].style.display="none";
+                                    document.getElementsByClassName("swal2-header")[0].style.padding="0px";
+                                    document.getElementsByClassName("swal2-content")[0].style.padding="0px";
+                
+                                    document.getElementsByClassName("swal2-container")[0].style.display="block";
+                                    document.getElementsByClassName("swal2-container")[0].style.flexDirection="";
+                                    document.getElementsByClassName("swal2-container")[0].style.alignItems="";
+                                    document.getElementsByClassName("swal2-container")[0].style.justifyContent="";
+                                    document.getElementsByClassName("swal2-container")[0].style.padding="0px";
+                                    document.getElementsByClassName("swal2-container")[0].style.background="transparent";
+                
+                                    document.getElementsByClassName("swal2-popup")[0].style.margin="0px";
+                                    document.getElementsByClassName("swal2-popup")[0].style.width="300px";
+                                    document.getElementsByClassName("swal2-popup")[0].style.borderRadius="2px";
+                                    document.getElementsByClassName("swal2-popup")[0].style.boxSizing="border-box";
+                                    document.getElementsByClassName("swal2-popup")[0].style.padding="0px";
+
+                                    var width=document.getElementsByClassName("swal2-popup")[0].offsetWidth;
+                                    var height=document.getElementsByClassName("swal2-popup")[0].offsetHeight;
+
+                                    if(event.clientY+height<window.innerHeight)
+                                        document.getElementsByClassName("swal2-popup")[0].style.top=event.clientY+"px";
+                                    else
+                                        document.getElementsByClassName("swal2-popup")[0].style.top=(event.clientY-height)+"px";
+                                    if(event.clientX+width<window.innerWidth)
+                                        document.getElementsByClassName("swal2-popup")[0].style.left=event.clientX+"px";
+                                    else
+                                        document.getElementsByClassName("swal2-popup")[0].style.left=(event.clientX-width)+"px";
+
+                                    $(".swal2-container").on("contextmenu", function(e)
+                                    {
+                                        e.preventDefault();
+                                        Swal.close();
+                                    });
+
+                                    setTimeout(() =>
+                                    {
+                                        document.getElementsByClassName("context-menu-grafico-temporale-commesse-outer-container")[0].style.visibility="visible";
+                                        document.getElementsByClassName("swal2-popup")[0].style.boxShadow="1px 1px 2px #cfcfcf";
+                                        document.getElementsByClassName("swal2-popup")[0].style.background="white";
+                                    }, 50);
+
+                                    $('.context-menu-grafico-temporale-commesse-button').each(function(i, button)
+                                    {
+                                        button.addEventListener("click", function()
+                                        {
+                                            var id_troncone=button.getAttribute("id_troncone");
+                                            var operator=button.getAttribute("operator");
+                                            var quantity=button.getAttribute("quantity");
+                                            var dots=JSON.parse(button.getAttribute("dots"));
+
+                                            var new_values={};
+                                            var move=false;
+                                            dots.forEach(dot_obj =>
+                                            {
+                                                var dot=dot_obj.nome;
+                                                var left=dot_obj.left;
+
+                                                if(operator=="+")
+                                                    var new_left_dot=left + (week_width * parseInt(quantity));
+                                                else
+                                                    var new_left_dot=left - (week_width * parseInt(quantity));
+
+                                                switch (dot)
+                                                {
+                                                    case "TAGLIO FERRO":
+                                                        if(new_left_dot<$(".chart-item-dot-impostazione"+id_troncone).attr("actual_left"))
+                                                            move=true;
+                                                    break;
+                                                    case "IMPOSTAZIONE":
+                                                        if(new_left_dot<$(".chart-item-dot-varo"+id_troncone).attr("actual_left") & new_left_dot>$(".chart-item-dot-taglio_ferro"+id_troncone).attr("actual_left"))
+                                                            move=true;
+                                                    break;
+                                                    case "VARO":
+                                                        if(new_left_dot<$(".chart-item-dot-consegna"+id_troncone).attr("actual_left") & new_left_dot>$(".chart-item-dot-impostazione"+id_troncone).attr("actual_left"))
+                                                            move=true;
+                                                    break;
+                                                    case "CONSEGNA":
+                                                        if(new_left_dot>$(".chart-item-dot-varo"+id_troncone).attr("actual_left"))
+                                                            move=true;
+                                                    break;
+                                                }
+
+                                                var j=0;
+                                                self.all_weeks.forEach(week_obj =>
+                                                {
+                                                    if(week_obj.year_week==weeks[left/week_width])
+                                                    {
+                                                        if(operator=="+")
+                                                            new_values[dot]=self.all_weeks[(j+parseInt(quantity))].year_week;
+                                                        else
+                                                            new_values[dot]=self.all_weeks[(j-parseInt(quantity))].year_week;
+                                                    }
+
+                                                    j++;
+                                                });
+                                            });
+                                            
+                                            Swal.close();
+
+                                            if(move)
+                                                self.afterContextMenuMove(new_values,id_troncone,true);
+                                        });
+                                    });
+                                }
+                    });
                 }
             }
-            if(event.target.className.indexOf("chart-item-dot")>-1)
+        });
+        $(".chart-inner-container").on("mousedown", function(event)
+        {
+            switch (event.which)
             {
-                var id_troncone=event.target.getAttribute("id_troncone");
-                var nome=event.target.getAttribute("nome");
-                if(id_troncone!=null && nome!=null)
+                case 1:
+                if(event.target.className.indexOf("chart-item-draggable")>-1)
                 {
-                    self.id_troncone_dot_selected=id_troncone;
-                    self.nome_dot_selected=nome;
-                    self.client_x_dot_selected=event.clientX;
-                    self.element_dot_selected=event.target;
+                    var id_troncone=event.target.getAttribute("id_troncone");
+                    if(id_troncone!=null)
+                    {
+                        self.id_troncone_item_selected=id_troncone;
+                        self.client_x_item_selected=event.clientX;
+
+                        $(".chart-item-rectangle"+self.id_troncone_item_selected).css({"opacity":"0.7"});
+                        $(".chart-item-line"+self.id_troncone_item_selected).css({"opacity":"0.7"});
+                    }
+                }
+                if(event.target.className.indexOf("chart-item-dot")>-1)
+                {
+                    var id_troncone=event.target.getAttribute("id_troncone");
+                    var nome=event.target.getAttribute("nome");
+                    if(id_troncone!=null && nome!=null)
+                    {
+                        self.id_troncone_dot_selected=id_troncone;
+                        self.nome_dot_selected=nome;
+                        self.client_x_dot_selected=event.clientX;
+                        self.element_dot_selected=event.target;
+                    }
                 }
             }
         });
@@ -6540,6 +6798,10 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
 
             if(self.id_troncone_item_selected != null)
             {
+                var run_after_update_call=false;
+                if($(".chart-item-container"+self.id_troncone_item_selected).attr("actual_left")!=$(".chart-item-container"+self.id_troncone_item_selected).css("left").replace("px",""))
+                    run_after_update_call=true;
+
                 $(".chart-item-container"+self.id_troncone_item_selected).attr("actual_left",$(".chart-item-container"+self.id_troncone_item_selected).css("left").replace("px",""));
 
                 var new_values={};
@@ -6555,7 +6817,8 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
 
                 try
                 {
-                    afterUpdateItemContainer(new_values,self.id_troncone_item_selected);
+                    if(run_after_update_call)
+                        self.afterUpdateItemContainer(new_values,self.id_troncone_item_selected,false);
                 } catch (error) {}
 
                 self.id_troncone_item_selected=null;
@@ -6563,6 +6826,10 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
             }
             if(self.id_troncone_dot_selected != null && self.nome_dot_selected != null)
             {
+                var run_after_update_call=false;
+                if($(".chart-item-container"+self.id_troncone_dot_selected).attr("actual_left")!=$(".chart-item-container"+self.id_troncone_dot_selected).css("left").replace("px",""))
+                    run_after_update_call=true;
+
                 $(".chart-item-container"+self.id_troncone_dot_selected).attr("actual_left",$(".chart-item-container"+self.id_troncone_dot_selected).css("left").replace("px",""));
 
                 $(self.element_dot_selected).attr("actual_left",$(self.element_dot_selected).css("left").replace("px",""));
@@ -6572,7 +6839,8 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
 
                 try
                 {
-                    afterUpdateDot(new_values,self.id_troncone_dot_selected);
+                    if(run_after_update_call)
+                        self.afterUpdateDot(new_values,self.id_troncone_dot_selected,false);
                 } catch (error) {}
 
                 self.id_troncone_dot_selected=null;
@@ -6580,6 +6848,10 @@ function ChartGraficoTemporaleCommesse(container_id, data, week_width, all_weeks
                 self.client_x_dot_selected=null;
             }
         });
+    }
+    this.removeVerticalLines = function()
+    {
+        $(".chart-vertical-line").remove();
     }
     this.getVerticalLines = function()
     {
@@ -6617,7 +6889,7 @@ function modificaMilestonesPrincipaliTroncone(values,id_troncone)
         });
     });
 }
-async function runModificaMilestonesPrincipaliTroncone(values,id_troncone)
+async function runModificaMilestonesPrincipaliTroncone(values,id_troncone,requiresRendering)
 {
     var response=await modificaMilestonesPrincipaliTroncone(values,id_troncone);
     if(response.toLowerCase().indexOf("error")>-1 || response.toLowerCase().indexOf("notice")>-1 || response.toLowerCase().indexOf("warning")>-1)
@@ -6647,7 +6919,187 @@ async function runModificaMilestonesPrincipaliTroncone(values,id_troncone)
     }
     else
     {
+        if(requiresRendering)
+        {
+            Swal.fire
+            ({
+                width:"100%",
+                background:"transparent",
+                title:"Caricamento in corso...",
+                html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+                allowOutsideClick:false,
+                showCloseButton:false,
+                showConfirmButton:false,
+                allowEscapeKey:false,
+                showCancelButton:false,
+                onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+            });
+        }
+
         dataGraficoTemporaleCommesseObj=await getDataGraficoTemporaleCommesse();
         chartGraficoTemporaleCommesse.data=dataGraficoTemporaleCommesseObj.data;
+        
+        if(requiresRendering)
+        {
+            Swal.close();
+            chartGraficoTemporaleCommesse.render();
+        }
     }
+}
+function esportaImmagineChartGraficoTemporaleCommesse()
+{
+    Swal.fire
+    ({
+        width:"100%",
+        background:"transparent",
+        title:"Caricamento in corso...",
+        html:'<i class="fad fa-spinner-third fa-spin fa-3x" style="color:white"></i>',
+        allowOutsideClick:false,
+        showCloseButton:false,
+        showConfirmButton:false,
+        allowEscapeKey:false,
+        showCancelButton:false,
+        onOpen : function(){document.getElementsByClassName("swal2-title")[0].style.fontWeight="bold";document.getElementsByClassName("swal2-title")[0].style.color="white";}
+    });
+
+    setTimeout(() => 
+    {
+        chartGraficoTemporaleCommesse.removeVerticalLines();
+        html2canvas(document.querySelector("#graficoTemporaleCommesseChartContainer")).then(canvas =>
+        {
+            var img = canvas.toDataURL("image/png");
+            var a=document.createElement("a");
+            a.setAttribute("download","grafico_temporale_commesse");
+            a.setAttribute("href",img);
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            chartGraficoTemporaleCommesse.getVerticalLines();
+    
+            Swal.close();
+        });
+    }, 200);
+}
+function esportaExcelChartGraficoTemporaleCommesse()
+{
+    console.log(chartGraficoTemporaleCommesse.data);
+    var table=document.createElement("table");
+    table.setAttribute("id","graficoTemporaleCommesseExportTable");
+    var tr=document.createElement("tr");
+    var td=document.createElement("td");
+    td.innerHTML="Troncone";
+    tr.appendChild(td);
+    var td=document.createElement("td");
+    td.innerHTML="TAGLIO FERRO";
+    tr.appendChild(td);
+    var td=document.createElement("td");
+    td.innerHTML="IMPOSTAZIONE";
+    tr.appendChild(td);
+    var td=document.createElement("td");
+    td.innerHTML="VARO";
+    tr.appendChild(td);
+    var td=document.createElement("td");
+    td.innerHTML="CONSEGNA";
+    tr.appendChild(td);
+    table.appendChild(tr);
+    chartGraficoTemporaleCommesse.data.forEach(item =>
+    {
+        var tr=document.createElement("tr");
+        var td=document.createElement("td");
+        td.innerHTML=item.troncone;
+        tr.appendChild(td);
+        var td=document.createElement("td");
+        td.innerHTML=item["TAGLIO FERRO"];
+        tr.appendChild(td);
+        var td=document.createElement("td");
+        td.innerHTML=item["IMPOSTAZIONE"];
+        tr.appendChild(td);
+        var td=document.createElement("td");
+        td.innerHTML=item["VARO"];
+        tr.appendChild(td);
+        var td=document.createElement("td");
+        td.innerHTML=item["CONSEGNA"];
+        tr.appendChild(td);
+        table.appendChild(tr);
+    });
+    document.body.appendChild(table);
+    exportTableToExcel("graficoTemporaleCommesseExportTable","grafico_temporale_commesse");
+    document.getElementById("graficoTemporaleCommesseExportTable").remove();
+}
+function exportTableToExcel(tableID, filename = '')
+{
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(tableID);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+    
+    // Specify file name
+    filename = filename?filename+'.xls':'excel_data.xls';
+    
+    // Create download link element
+    downloadLink = document.createElement("a");
+    
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+    
+        // Setting the file name
+        downloadLink.download = filename;
+        
+        //triggering the function
+        downloadLink.click();
+    }
+}
+function toggleFilterGraficoTemporaleCommesse(button,id)
+{
+    if(button.getAttribute("active")=="false")
+    {
+        button.style.backgroundColor=button.getAttribute("active_color");
+        button.style.color="white";
+        button.setAttribute("active","true");
+        filtersGraficoTemporaleCommesse.push(parseInt(button.getAttribute(id)));
+    }
+    else
+    {
+        button.style.backgroundColor="";
+        button.style.color="";
+        button.setAttribute("active","false");
+        filtersGraficoTemporaleCommesse.splice(filtersGraficoTemporaleCommesse.indexOf(parseInt(button.getAttribute(id))), 1);
+    }
+
+    var buttons=document.getElementsByClassName("grafico-previsionale-filter-macro_attivita");
+    buttons.forEach(button_lcl =>
+    {
+        if(button_lcl.getAttribute("active")=="true")
+        {
+            if(filtersGraficoTemporaleCommesse.length==1)
+                button_lcl.style.backgroundColor=button_lcl.getAttribute("active_color_macro_attivita");
+            else
+                button_lcl.style.backgroundColor=button_lcl.getAttribute("active_color");
+        }
+    });
+
+    setCookie("filtersGraficoTemporaleCommesse",JSON.stringify(filtersGraficoTemporaleCommesse));
+
+    var response=filterGraficoTemporaleCommesse();
+    chartGraficoTemporaleCommesse.data=response;
+    chartGraficoTemporaleCommesse.render();
+}
+function filterGraficoTemporaleCommesse()
+{
+    var filteredDataGraficoTemporaleCommesseObj=[];
+    dataGraficoTemporaleCommesseObj.data.forEach(item =>
+    {
+        if(filtersGraficoTemporaleCommesse.includes(item.id_troncone))
+            filteredDataGraficoTemporaleCommesseObj.push(item);
+    });
+
+    return filteredDataGraficoTemporaleCommesseObj;
 }

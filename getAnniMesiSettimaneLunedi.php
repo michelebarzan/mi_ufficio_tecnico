@@ -7,7 +7,7 @@
 
     $q2="SELECT TOP (100) PERCENT DATEPART(yy, data) AS year, DATEPART(mm, data) AS month, REPLACE(settimana, { fn CONCAT(CONVERT(varchar(MAX), LEFT(settimana, 4)), '_') }, '') AS week, DATEPART(dd, data) AS day, settimana AS year_week, data AS date
         FROM dbo.lunedi_settimane
-        ORDER BY year_week";
+        ORDER BY date";
     $r2=sqlsrv_query($conn,$q2);
     if($r2==FALSE)
     {

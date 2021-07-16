@@ -15,6 +15,7 @@
 		<link rel="stylesheet" href="css/darkPopup.css" />
         <link rel="stylesheet" href="css/pianificazioneCommesse.css" />
 		<script src="libs/js/canvasjs.min.js"></script>
+		<script src="libs/js/html2canvas.min.js"></script>
 	</head>
 	<body>
 		<?php include('struttura.php'); ?>
